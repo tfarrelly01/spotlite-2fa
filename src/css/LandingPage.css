@@ -2,7 +2,6 @@
     box-sizing: border-box;
 }
 
-
 .container {
 /*	max-width:1000px; */
 	width: 100%;
@@ -19,11 +18,10 @@ input[type=text], [type=search], [type=email], [type=tel], select, textarea {
     float: left;
 }
 
-label {
+p, label {
     padding: 12px 12px 12px 5px;
     display: flex;
 }
-
 
 input[type=submit] {
     width: 40%;
@@ -38,8 +36,27 @@ input[type=submit] {
 
 }
 
+.hide-text {
+    visibility: hidden;
+}
+
+.error {
+    width: 90%;
+    color: red;
+    font-size: 80%;
+    font-weight: bold;
+}
+
 input[type=submit]:hover {
-    background-color: #45a049;
+    background-color: #456fa0;
+}
+
+input[type=submit]:enabled {
+    background: green;
+}
+
+input[type=submit]:disabled {
+    background: #dddddd;
 }
 
 .container {
@@ -67,10 +84,9 @@ input[type=submit]:hover {
     clear: both;
 }
 
-
 /* Responsive layout - when the screen is greater than 900px wide input field lengths are set to 75% of normal size */
 @media screen and (min-width: 900px) {
-    input[type=text], [type=search], [type=email], [type=tel], select, textarea {
+    input[type=text], [type=search], [type=email], [type=tel], select, textarea { 
         width: 75%;
         margin-top: 0;
     }
@@ -81,5 +97,8 @@ input[type=submit]:hover {
     .col-25, .col-75, input[type=submit] {
         width: 100%;
         margin-top: 0;
+    }
+    .hide-text {
+        display: none;
     }
 }
