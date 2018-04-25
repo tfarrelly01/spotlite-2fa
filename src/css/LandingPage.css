@@ -9,6 +9,12 @@
 	position:relative;
 }
 
+.App-intro {
+    margin: 5px;
+    font-size: medium;
+    font-weight: bold;
+  }
+
 input[type=text], [type=search], [type=email], [type=tel], select, textarea {
     width: 100%;
     padding: 12px;

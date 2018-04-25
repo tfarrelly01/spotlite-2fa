@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import spotLiteLogo from '../SPOTLITE-MASTER-LOGOS-01.png';
 import '../css/App.css';
 import LandingPage from './LandingPage';
+import EnterVerificationCode from './EnterVerificationCode';
 import {validateEmail, validatePhoneNo} from '../utils/Validation';
 
 class App extends Component {
@@ -13,6 +14,8 @@ class App extends Component {
         eMail: '',
         addrSearch: '',
         phoneNumber: '',
+        generatedPin: '',
+        verificationCode: '',
         error: null
     }
     this.onChange = this.onChange.bind(this);
@@ -53,7 +56,7 @@ class App extends Component {
   }
 
   onBlurEvent(event) {
-      const {name, eMail, addrSearch, phoneNumber} = this.state;
+      const {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode} = this.state;
 
       let targetName = event.target.name;
       console.log("onBlurEvent - Field::", event.target.name);
@@ -83,6 +86,11 @@ class App extends Component {
           if (addrSearch.length === 0) this.setError('Your address is required');
           else this.setError(null);
       }
+
+      if (targetName === 'verificationCode') {
+        if (verificationCode.length === 0) this.setError('A Verification Code is required!');
+        else this.setError(null);
+    }
   }
 
   setError (error) {
@@ -102,38 +110,50 @@ class App extends Component {
   }
 
   onHandleSubmit() {
-  //      let {name, eMail, addrSearch, phoneNumber, error} = this.state;
+        let {generatedPin} = this.state;
       console.log("onHandleSubmit FIRED !!!");
-      if (this.onCanSubmit()) 
-          console.log("OK to Submit!!!");    
+      if (this.onCanSubmit()) {
+          console.log("OK to Submit!!!"); 
+        this.setState({
+          generatedPin: '1234'
+        });
+      }  
       else
           console.log("CANNOT Submit!!!");
   }
 
   render() {
-    let {name, eMail, addrSearch, phoneNumber, error} = this.state;
+    let {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode, error} = this.state;
     return (
       <div className="App">  
         <header className="App-header">
           <img src={spotLiteLogo} className="App-logo" alt="logo" />
         </header>
-        <div className="App-intro">
-            Please register and confirm your acceptance of our terms and conditions to
-            commence the background checking process.
-        </div>
     
-        <LandingPage
-          name={name}
-          eMail={eMail}
-          addrSearch={addrSearch}
-          phoneNumber={phoneNumber}
-          error={error}
-          onChange={this.onChange}
-          onBlurEvent={this.onBlurEvent}
-          setError={this.setError}
-          onCanSubmit={this.onCanSubmit}
-          onHandleSubmit={this.onHandleSubmit}      
-        />
+        { generatedPin.length === 0
+          ?
+            <LandingPage
+              name={name}
+              eMail={eMail}
+              addrSearch={addrSearch}
+              phoneNumber={phoneNumber}
+              error={error}
+              onChange={this.onChange}
+              onBlurEvent={this.onBlurEvent}
+              onCanSubmit={this.onCanSubmit}
+              onHandleSubmit={this.onHandleSubmit}      
+            />
+          :
+            <EnterVerificationCode 
+              phoneNumber={phoneNumber}
+              verificationCode={verificationCode}
+              error={error}
+              onChange={this.onChange}
+              onBlurEvent={this.onBlurEvent}
+              onCanSubmit={this.onCanSubmit}
+              onHandleSubmit={this.onHandleSubmit}        
+            />
+        }
       </div>
     );
   }
