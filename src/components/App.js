@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import spotLiteLogo from '../SPOTLITE-MASTER-LOGOS-01.png';
 import '../css/App.css';
 import LandingPage from './LandingPage';
-import {validateEmail} from '../utils/Validation';
+import {validateEmail, validatePhoneNo} from '../utils/Validation';
 
 class App extends Component {
   constructor(props) {
@@ -69,8 +69,14 @@ class App extends Component {
       }
 
       if (targetName === 'phoneNumber') {
-          if (phoneNumber.length === 0) this.setError('Your mobile number is required');
-          else this.setError(null);
+          if (phoneNumber.length === 0) {
+            this.setError('Your mobile number is required');
+          }
+          else {
+            validatePhoneNo(phoneNumber)
+            .then(phoneNumber => this.setError(null))
+            .catch(error => this.setError(error)) 
+          }
       }   
           
       if (targetName === 'addrSearch') {
@@ -128,7 +134,6 @@ class App extends Component {
           onCanSubmit={this.onCanSubmit}
           onHandleSubmit={this.onHandleSubmit}      
         />
-
       </div>
     );
   }
