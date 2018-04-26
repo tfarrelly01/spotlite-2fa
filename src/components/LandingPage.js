@@ -14,7 +14,7 @@ class LandingPage extends Component {
     }
 
     render() {
-        let {name, eMail, addrSearch, phoneNumber, error} = this.props;
+        let {name, eMail, addrSearch, phoneNumber, error, errors} = this.props;
         return (
             <div className="container">
                 <div className="row">
@@ -31,6 +31,7 @@ class LandingPage extends Component {
                     </div>
                     <div className="col-75">
                         <input 
+                            className={errors.name ? "error" : ""}
                             type="text" 
                             id="name" 
                             name="name" 
@@ -46,7 +47,8 @@ class LandingPage extends Component {
                         <label htmlFor="email">Email Address</label>
                     </div>
                     <div className="col-75">
-                        <input 
+                        <input                                    
+                            className={errors.eMail ? "error" : ""}
                             type="email" 
                             id="email" 
                             name="eMail" 
@@ -62,7 +64,8 @@ class LandingPage extends Component {
                         <label htmlFor="mphone">Phone Number</label>
                     </div>
                     <div className="col-75">
-                        <input 
+                        <input                                   
+                            className={errors.phoneNumber ? "error" : ""}
                             type="tel" 
                             id="mphone" 
                             name="phoneNumber" 
@@ -78,7 +81,8 @@ class LandingPage extends Component {
                         <label htmlFor="addrsearch">Search Address</label>
                     </div>
                     <div className="col-75">
-                        <input 
+                        <input
+                            className={errors.addrSearch ? "error" : ""} 
                             type="search" 
                             id="addrsearch" 
                             name="addrSearch" 

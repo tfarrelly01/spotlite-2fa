@@ -16,7 +16,14 @@ class App extends Component {
         phoneNumber: '',
         generatedPin: '',
         verificationCode: '',
-        error: null
+        error: null,
+        errors: {
+          name: true,
+          eMail: true,
+          addrSearch: true,
+          phoneNumber: true,
+          verificationCode: false,
+        }
     }
     this.onChange = this.onChange.bind(this);
     this.onBlurEvent = this.onBlurEvent.bind(this);
@@ -25,6 +32,7 @@ class App extends Component {
     this.onHandleSubmit = this.onHandleSubmit.bind(this);
   }
 
+  /*
   componentWillUpdate(nextProps, nextState) {
     //      super.componentWillUpdate(nextProps, nextState );
       let {eMail} = nextState;
@@ -40,77 +48,154 @@ class App extends Component {
           }
       }
   }
+  */
+  
+  componentWillUpdate(nextProps, nextState) {
+    //      super.componentWillUpdate(nextProps, nextState );
+      let {eMail} = nextState;
+  
+      if (eMail !== undefined && eMail !== this.state.eMail) {
+          if (eMail.length === 0) {
+              this.setError(null, 'eMail', eMail);
+          } else {
+            //validate the value we have
+            if (!validateEmail(eMail)) {
+              this.setError('Unexpected email format', 'eMail', eMail);
+            } else {
+              this.setError(null, 'eMail', eMail);
+            }
+/*
+              validateEmail(eMail)
+              .then(eMail => this.setError(null, 'eMail', eMail))
+              .catch(error => this.setError(error, 'eMail', eMail))
+*/
+          }
+      }
+  }
 
   onChange(event) {
-      // console.log('onChange FIRED!!!');
+      console.log('onChange FIRED!!!');
       let targetName = event.target.name;
       let targetValue = event.target.value;
 
       // Clear previous error message if user enters a character in field 
-      let error = this.state.error || targetValue.length === 0 ? null : this.state.error;
-
+      let error = this.state.error  ? null : this.state.error;
+      let errorFound = this.state.error ? true : false;
+      
       this.setState({
-        [targetName] : targetValue,
-        error: error
+        ...this.state, 
+        [targetName]: targetValue, 
+        error: error, 
+        errors: {
+          ...this.state.errors, 
+          [targetName]: errorFound
+        }
       });
   }
 
   onBlurEvent(event) {
-      const {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode} = this.state;
+      // const {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode, errors} = this.state;
 
       let targetName = event.target.name;
-      console.log("onBlurEvent - Field::", event.target.name);
+      let targetValue = event.target.value;
+      let error;
+
       if (targetName === 'name') {
-          if (name.length === 0) this.setError('Your name is required');
-          else this.setError(null);
+          if (targetValue.length === 0) {
+            error = 'Your name is required';
+          } else {
+            error = null;
+          }
       }
 
       if (targetName === 'eMail') {
+        if (targetValue.length === 0) {
+          error = 'An email address is required'; 
+        } else {
+          if (!validateEmail(targetValue)) {
+            error = 'Unexpected email format';
+          } else {
+            error = null;
+          }
+        /*
           validateEmail(eMail)
-              .then(eMail => this.setError(null))
-              .catch(error => this.setError(error)) 
+              .then(eMail => error = this.setError(null))
+              .catch(error => error = this.setError(error)) 
+        */
+        }
       }
 
       if (targetName === 'phoneNumber') {
-          if (phoneNumber.length === 0) {
-            this.setError('Your mobile number is required');
-          }
-          else {
+          if (targetValue.length === 0) {
+            error = 'Telephone number is required';
+          } else {
+            if (!validatePhoneNo(targetValue)) {
+              error = 'Unexpected phone number format';
+            } else {
+              error = null;
+            }
+            /*
             validatePhoneNo(phoneNumber)
-            .then(phoneNumber => this.setError(null))
-            .catch(error => this.setError(error)) 
+            .then(phoneNumber => error = this.setError(null))
+            .catch(error => error = this.setError(error)) 
+            */
           }
       }   
           
       if (targetName === 'addrSearch') {
-          if (addrSearch.length === 0) this.setError('Your address is required');
-          else this.setError(null);
+          if (targetValue.length === 0) {
+            error = 'Your address is required';
+          } else {
+            error = null;
+          }
       }
 
       if (targetName === 'verificationCode') {
-        if (verificationCode.length === 0) this.setError('A Verification Code is required!');
-        else this.setError(null);
-    }
+        if (targetValue.length === 0) {
+          error = 'A Verification Code is required!';
+        } else {
+          error = null;
+        }
+      }
+
+      let errorFound = error ? true : false;
+
+      this.setState({
+        ...this.state, 
+        error: error, 
+        [targetName]: targetValue, 
+        errors: 
+        {
+          ...this.state.errors, 
+          [targetName]: errorFound
+        }
+      });
   }
 
-  setError (error) {
-      this.setState({
-          error: error
-      });
-      console.log('error::', error);
+  setError (error, targetName, targetValue) {
+    this.setState({
+      ...this.state, 
+      error: error, 
+      [targetName]: targetValue, 
+      errors: 
+      {
+        ...this.state.errors, 
+        [targetName]: error ? true : false
+      }
+    });
   }
 
   onCanSubmit() {
-    let {name, eMail, addrSearch, phoneNumber, error} = this.state;
-    console.log("onCanSubmit FIRED !!!");
+    let {error, errors} = this.state;
 
-    return !error && name.length > 0 && eMail.length > 0 && addrSearch.length > 0 && phoneNumber.length > 0
-        ? true
-        : false;
+    console.log('this.state::', this.state);
+    return error || Object.values(errors).indexOf(true) > -1
+        ? false
+        : true;
   }
 
   onHandleSubmit() {
-        let {generatedPin} = this.state;
+   //   let {generatedPin} = this.state;
       console.log("onHandleSubmit FIRED !!!");
       if (this.onCanSubmit()) {
           console.log("OK to Submit!!!"); 
@@ -123,7 +208,7 @@ class App extends Component {
   }
 
   render() {
-    let {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode, error} = this.state;
+    let {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode, error, errors} = this.state;
     return (
       <div className="App">  
         <header className="App-header">
@@ -138,6 +223,7 @@ class App extends Component {
               addrSearch={addrSearch}
               phoneNumber={phoneNumber}
               error={error}
+              errors={errors}
               onChange={this.onChange}
               onBlurEvent={this.onBlurEvent}
               onCanSubmit={this.onCanSubmit}
@@ -148,6 +234,7 @@ class App extends Component {
               phoneNumber={phoneNumber}
               verificationCode={verificationCode}
               error={error}
+              errors={errors}
               onChange={this.onChange}
               onBlurEvent={this.onBlurEvent}
               onCanSubmit={this.onCanSubmit}

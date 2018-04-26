@@ -53,6 +53,11 @@ input[type=submit] {
     font-weight: bold;
 }
 
+input.error {
+    color: black;
+    border-color: red;
+}
+
 input[type=submit]:hover {
     background-color: #456fa0;
 }
