@@ -14,7 +14,7 @@ class EnterVerificationCode extends Component {
     }
 
     render() {
-        let {verificationCode, phoneNumber, error} = this.props;
+        let {name, verificationCode, phoneNumber, error} = this.props;
         return (
             <div className="container">
                 <div className="row">

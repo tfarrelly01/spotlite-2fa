@@ -3,6 +3,7 @@ import spotLiteLogo from '../SPOTLITE-MASTER-LOGOS-01.png';
 import '../css/App.css';
 import LandingPage from './LandingPage';
 import EnterVerificationCode from './EnterVerificationCode';
+import VerificationSuccess from './VerificationSuccess';
 import {validateEmail, validatePhoneNo} from '../utils/Validation';
 
 class App extends Component {
@@ -27,7 +28,7 @@ class App extends Component {
     }
     this.onChange = this.onChange.bind(this);
     this.onBlurEvent = this.onBlurEvent.bind(this);
-    this.setError = this.setError.bind(this);
+    this.updateState = this.updateState.bind(this);
     this.onCanSubmit = this.onCanSubmit.bind(this);
     this.onHandleSubmit = this.onHandleSubmit.bind(this);
   }
@@ -39,12 +40,12 @@ class App extends Component {
   
       if (eMail !== undefined && eMail !== this.state.eMail) {
           if (eMail.length === 0) {
-              this.setError(null);
+              this.updateState(null);
           } else {
               //validate the value we have
               validateEmail(eMail)
-              .then(eMail => this.setError(null))
-              .catch(error => this.setError(error))
+              .then(eMail => this.updateState(null))
+              .catch(error => this.updateState(error))
           }
       }
   }
@@ -56,18 +57,18 @@ class App extends Component {
   
       if (eMail !== undefined && eMail !== this.state.eMail) {
           if (eMail.length === 0) {
-              this.setError(null, 'eMail', eMail);
+              this.updateState(null, 'eMail', eMail);
           } else {
             //validate the value we have
             if (!validateEmail(eMail)) {
-              this.setError('Unexpected email format', 'eMail', eMail);
+              this.updateState('Unexpected email format', 'eMail', eMail);
             } else {
-              this.setError(null, 'eMail', eMail);
+              this.updateState(null, 'eMail', eMail);
             }
 /*
               validateEmail(eMail)
-              .then(eMail => this.setError(null, 'eMail', eMail))
-              .catch(error => this.setError(error, 'eMail', eMail))
+              .then(eMail => this.updateState(null, 'eMail', eMail))
+              .catch(error => this.updateState(error, 'eMail', eMail))
 */
           }
       }
@@ -119,8 +120,8 @@ class App extends Component {
           }
         /*
           validateEmail(eMail)
-              .then(eMail => error = this.setError(null))
-              .catch(error => error = this.setError(error)) 
+              .then(eMail => error = this.updateState(null))
+              .catch(error => error = this.updateState(error)) 
         */
         }
       }
@@ -136,8 +137,8 @@ class App extends Component {
             }
             /*
             validatePhoneNo(phoneNumber)
-            .then(phoneNumber => error = this.setError(null))
-            .catch(error => error = this.setError(error)) 
+            .then(phoneNumber => error = this.updateState(null))
+            .catch(error => error = this.updateState(error)) 
             */
           }
       }   
@@ -158,21 +159,10 @@ class App extends Component {
         }
       }
 
-      let errorFound = error ? true : false;
-
-      this.setState({
-        ...this.state, 
-        error: error, 
-        [targetName]: targetValue, 
-        errors: 
-        {
-          ...this.state.errors, 
-          [targetName]: errorFound
-        }
-      });
+      this.updateState(error, targetName, targetValue);
   }
 
-  setError (error, targetName, targetValue) {
+  updateState (error, targetName, targetValue) {
     this.setState({
       ...this.state, 
       error: error, 
@@ -202,9 +192,10 @@ class App extends Component {
         this.setState({
           generatedPin: '1234'
         });
-      }  
-      else
+      }     
+      else {
           console.log("CANNOT Submit!!!");
+      }
   }
 
   render() {
@@ -229,16 +220,25 @@ class App extends Component {
               onCanSubmit={this.onCanSubmit}
               onHandleSubmit={this.onHandleSubmit}      
             />
-          :
-            <EnterVerificationCode 
+          : verificationCode.length === 0 || verificationCode !== generatedPin
+            ?
+              <EnterVerificationCode 
+                phoneNumber={phoneNumber}
+                verificationCode={verificationCode}
+                error={error}
+                errors={errors}
+                onChange={this.onChange}
+                onBlurEvent={this.onBlurEvent}
+                onCanSubmit={this.onCanSubmit}
+                onHandleSubmit={this.onHandleSubmit}        
+              />
+            :
+            <VerificationSuccess 
+              name={name}
               phoneNumber={phoneNumber}
+              eMail={eMail}
+              generatedPin={generatedPin}
               verificationCode={verificationCode}
-              error={error}
-              errors={errors}
-              onChange={this.onChange}
-              onBlurEvent={this.onBlurEvent}
-              onCanSubmit={this.onCanSubmit}
-              onHandleSubmit={this.onHandleSubmit}        
             />
         }
       </div>
