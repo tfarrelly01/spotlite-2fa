@@ -1,30 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import '../css/LandingPage.css';
 
-class VerificationSuccess extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        name={name}
-        phoneNumber={phoneNumber}
-        eMail={eMail}
-        generatedPin={generatedPin}
-        verificationCode={verificationCode}
-        let {name, phoneNumber, eMail, generatedPin, verificationCode, error} = this.props;
-        return (
-            <div className="container">
-                <div className="row">
-                    <h3>Verification Completed</h3>
-                </div>
-                <div className="row App-intro">
-T                   Thank you, the registration process is complete. 
-                </div>
-            </div>
-        );
-    }
-}
+const VerificationSuccess = () => (
+    <div className="container">
+        <div className="row">
+            <h3>Verification Completed</h3>
+        </div>
+        <div className="row App-intro">
+            Thank you, the registration process is complete. Please close the browser window.
+        </div>
+    </div>
+);
 
 export default VerificationSuccess;

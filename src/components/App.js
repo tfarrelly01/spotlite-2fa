@@ -23,7 +23,6 @@ class App extends Component {
           eMail: true,
           addrSearch: true,
           phoneNumber: true,
-          verificationCode: false,
         }
     }
     this.onChange = this.onChange.bind(this);
@@ -31,6 +30,7 @@ class App extends Component {
     this.updateState = this.updateState.bind(this);
     this.onCanSubmit = this.onCanSubmit.bind(this);
     this.onHandleSubmit = this.onHandleSubmit.bind(this);
+    this.setVerificationCode = this.setVerificationCode.bind(this);
   }
 
   /*
@@ -53,113 +53,104 @@ class App extends Component {
   
   componentWillUpdate(nextProps, nextState) {
     //      super.componentWillUpdate(nextProps, nextState );
-      let {eMail} = nextState;
-  
-      if (eMail !== undefined && eMail !== this.state.eMail) {
-          if (eMail.length === 0) {
-              this.updateState(null, 'eMail', eMail);
+    let {eMail} = nextState;
+
+    if (eMail !== undefined && eMail !== this.state.eMail) {
+        if (eMail.length === 0) {
+            this.updateState(null, 'eMail', eMail);
+        } else {
+          //validate the value we have
+          if (!validateEmail(eMail)) {
+            this.updateState('Unexpected email format', 'eMail', eMail);
           } else {
-            //validate the value we have
-            if (!validateEmail(eMail)) {
-              this.updateState('Unexpected email format', 'eMail', eMail);
-            } else {
-              this.updateState(null, 'eMail', eMail);
-            }
+            this.updateState(null, 'eMail', eMail);
+          }
 /*
               validateEmail(eMail)
               .then(eMail => this.updateState(null, 'eMail', eMail))
               .catch(error => this.updateState(error, 'eMail', eMail))
 */
-          }
-      }
+        }
+    }
   }
 
   onChange(event) {
-      console.log('onChange FIRED!!!');
-      let targetName = event.target.name;
-      let targetValue = event.target.value;
+    console.log('onChange FIRED!!!');
+    let targetName = event.target.name;
+    let targetValue = event.target.value;
 
-      // Clear previous error message if user enters a character in field 
-      let error = this.state.error  ? null : this.state.error;
-      let errorFound = this.state.error ? true : false;
-      
-      this.setState({
-        ...this.state, 
-        [targetName]: targetValue, 
-        error: error, 
-        errors: {
-          ...this.state.errors, 
-          [targetName]: errorFound
-        }
-      });
+    // Clear previous error message if user enters a character in field 
+    let error = this.state.error  ? null : this.state.error;
+    
+    this.updateState(error, targetName, targetValue);
   }
 
   onBlurEvent(event) {
-      // const {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode, errors} = this.state;
+    // const {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode, errors} = this.state;
 
-      let targetName = event.target.name;
-      let targetValue = event.target.value;
-      let error;
+    let targetName = event.target.name;
+    let targetValue = event.target.value;
+    let error;
 
-      if (targetName === 'name') {
-          if (targetValue.length === 0) {
-            error = 'Your name is required';
-          } else {
-            error = null;
-          }
+    if (targetName === 'name') {
+      if (targetValue.length === 0) {
+        error = 'Your name is required';
+      } else {
+        error = null;
       }
+    }
 
-      if (targetName === 'eMail') {
-        if (targetValue.length === 0) {
-          error = 'An email address is required'; 
-        } else {
-          if (!validateEmail(targetValue)) {
-            error = 'Unexpected email format';
-          } else {
-            error = null;
-          }
-        /*
-          validateEmail(eMail)
-              .then(eMail => error = this.updateState(null))
-              .catch(error => error = this.updateState(error)) 
-        */
-        }
-      }
-
-      if (targetName === 'phoneNumber') {
-          if (targetValue.length === 0) {
-            error = 'Telephone number is required';
-          } else {
-            if (!validatePhoneNo(targetValue)) {
-              error = 'Unexpected phone number format';
-            } else {
-              error = null;
-            }
-            /*
-            validatePhoneNo(phoneNumber)
-            .then(phoneNumber => error = this.updateState(null))
-            .catch(error => error = this.updateState(error)) 
-            */
-          }
-      }   
-          
-      if (targetName === 'addrSearch') {
-          if (targetValue.length === 0) {
-            error = 'Your address is required';
-          } else {
-            error = null;
-          }
-      }
-
-      if (targetName === 'verificationCode') {
-        if (targetValue.length === 0) {
-          error = 'A Verification Code is required!';
+    if (targetName === 'eMail') {
+      if (targetValue.length === 0) {
+        error = 'An email address is required'; 
+      } else {
+        if (!validateEmail(targetValue)) {
+          error = 'Unexpected email format';
         } else {
           error = null;
         }
+      /*
+        validateEmail(eMail)
+            .then(eMail => error = this.updateState(null))
+            .catch(error => error = this.updateState(error)) 
+      */
       }
+    }
 
-      this.updateState(error, targetName, targetValue);
+    if (targetName === 'phoneNumber') {
+      if (targetValue.length === 0) {
+        error = 'Telephone number is required';
+      } else {
+        if (!validatePhoneNo(targetValue)) {
+          error = 'Unexpected phone number format';
+        } else {
+          error = null;
+        }
+        /*
+        validatePhoneNo(phoneNumber)
+        .then(phoneNumber => error = this.updateState(null))
+        .catch(error => error = this.updateState(error)) 
+        */
+      }
+    }   
+        
+    if (targetName === 'addrSearch') {
+      if (targetValue.length === 0) {
+        error = 'Your address is required';
+      } else {
+        error = null;
+      }
+    }
+
+    if (targetName === 'verificationCode') {
+      if (targetValue.length === 0) {
+        error = 'A Verification Code is required!';
+      } else {
+        error = null;
+      }
+    }
+
+    this.updateState(error, targetName, targetValue);
   }
 
   updateState (error, targetName, targetValue) {
@@ -178,7 +169,7 @@ class App extends Component {
   onCanSubmit() {
     let {error, errors} = this.state;
 
-    console.log('this.state::', this.state);
+    console.log('onCanSubmit FIRED!!!');
     return error || Object.values(errors).indexOf(true) > -1
         ? false
         : true;
@@ -186,16 +177,22 @@ class App extends Component {
 
   onHandleSubmit() {
    //   let {generatedPin} = this.state;
-      console.log("onHandleSubmit FIRED !!!");
-      if (this.onCanSubmit()) {
-          console.log("OK to Submit!!!"); 
-        this.setState({
-          generatedPin: '1234'
-        });
-      }     
-      else {
-          console.log("CANNOT Submit!!!");
-      }
+    console.log("onHandleSubmit FIRED !!!");
+    if (this.onCanSubmit()) {
+        console.log("OK to Submit!!!"); 
+      this.setState({
+        generatedPin: '1234'
+      });
+    }     
+    else {
+        console.log("CANNOT Submit!!!");
+    }
+  }
+
+  setVerificationCode(code) {
+    this.setState({
+      verificationCode: code
+    });
   }
 
   render() {
@@ -224,22 +221,12 @@ class App extends Component {
             ?
               <EnterVerificationCode 
                 phoneNumber={phoneNumber}
+                generatedPin={generatedPin}
                 verificationCode={verificationCode}
-                error={error}
-                errors={errors}
-                onChange={this.onChange}
-                onBlurEvent={this.onBlurEvent}
-                onCanSubmit={this.onCanSubmit}
-                onHandleSubmit={this.onHandleSubmit}        
+                setVerificationCode={this.setVerificationCode}
               />
             :
-            <VerificationSuccess 
-              name={name}
-              phoneNumber={phoneNumber}
-              eMail={eMail}
-              generatedPin={generatedPin}
-              verificationCode={verificationCode}
-            />
+            <VerificationSuccess />
         }
       </div>
     );

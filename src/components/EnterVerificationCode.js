@@ -5,16 +5,66 @@ import '../css/LandingPage.css';
 class EnterVerificationCode extends Component {
     constructor(props) {
         super(props);
-
+        this.state = {
+            error: null
+        }
+        this.onChange = this.onChange.bind(this);
+        this.onBlurEvent = this.onBlurEvent.bind(this);
         this.onCanSubmit = this.onCanSubmit.bind(this);
+        this.onHandleSubmit = this.onHandleSubmit.bind(this);
+        this.setError = this.setError.bind(this);
+    }
+
+    onChange(event) {
+        let {error} = this.state;
+        let targetValue = event.target.value;
+
+        // Clear previous error message if user enters a character in field 
+        if (error) {
+            this.setError(null);
+        }
+        this.props.setVerificationCode(targetValue);
+    
+    }
+
+    onBlurEvent(event) {
+        const {generatedPin} = this.props;
+
+        let targetValue = event.target.value;
+
+        if (targetValue.length === 0) {
+            this.setError('A Verification Code is required!');
+        } else if (targetValue !== generatedPin) {
+            this.setError('Your verification code is invalid. Please check it and try again.');
+        } else {
+            this.setError(null);
+        }
+        this.props.setVerificationCode(targetValue);
     }
 
     onCanSubmit() {
-        return this.props.onCanSubmit();
+        let {error} = this.state;
+        return error ? false : true;
+    }
+
+    onHandleSubmit() {
+        let {generatedPin} = this.state;
+
+        if (this.onCanSubmit()) {
+            console.log("OK to Submit!!!"); 
+            this.props.setVerificationCode(generatedPin);
+        }
+    }
+
+    setError(error) {
+        this.setState({
+            error: error
+        })
     }
 
     render() {
-        let {name, verificationCode, phoneNumber, error} = this.props;
+        let {phoneNumber, verificationCode} = this.props;
+        let {error} = this.state;
         return (
             <div className="container">
                 <div className="row">
@@ -32,13 +82,14 @@ class EnterVerificationCode extends Component {
                     </div>
                     <div className="col-75">
                         <input 
+                            className={error ? "error" : ""} 
                             type="text" 
                             id="code" 
                             name="verificationCode" 
                             placeholder="Verification Code"
                             value={verificationCode}
-                            onChange={this.props.onChange}
-                            onBlur={this.props.onBlurEvent}
+                            onChange={this.onChange}
+                            onBlur={this.onBlurEvent}
                         />
                     </div>
                 </div>
@@ -61,7 +112,7 @@ class EnterVerificationCode extends Component {
                             type="submit"
                             value="Verify"
                             disabled={!this.onCanSubmit()}
-                            onClick={this.props.onHandleSubmit}
+                            onSubmit={this.onHandleSubmit}
                         />
                     </div>
                 </div>
