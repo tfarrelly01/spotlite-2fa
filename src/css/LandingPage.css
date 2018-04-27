@@ -6,16 +6,17 @@
 /*	max-width:1000px; */
 	width: 100%;
 	margin:0 auto;
-	position:relative;
+    position:relative;
 }
 
 .App-intro {
-    margin: 5px;
-    font-size: medium;
+    font-size: 90%;
     font-weight: bold;
+    text-align: justify;
+    text-justify: inter-word;
   }
 
-input[type=text], [type=search], [type=email], [type=tel], select, textarea {
+[type=text], [type=search], [type=email], [type=tel], select, textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #ccc;
@@ -46,11 +47,22 @@ input[type=submit] {
     visibility: hidden;
 }
 
+.message {
+    width: 90%;
+    color: green;
+    font-size: 80%;
+    font-weight: bold;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
 .error {
     width: 90%;
     color: red;
     font-size: 80%;
     font-weight: bold;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 input.error {
@@ -97,7 +109,7 @@ input[type=submit]:disabled {
 
 /* Responsive layout - when the screen is greater than 900px wide input field lengths are set to 75% of normal size */
 @media screen and (min-width: 900px) {
-    input[type=text], [type=search], [type=email], [type=tel], select, textarea { 
+    [type=text], [type=search], [type=email], [type=tel], select, textarea { 
         width: 75%;
         margin-top: 0;
     }
@@ -105,7 +117,7 @@ input[type=submit]:disabled {
 
 /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 600px) {
-    .col-25, .col-75, input[type=submit] {
+    .col-25, .col-75, [type=submit] {
         width: 100%;
         margin-top: 0;
     }

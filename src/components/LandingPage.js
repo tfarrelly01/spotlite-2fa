@@ -76,6 +76,18 @@ class LandingPage extends Component {
                         />
                     </div>
                 </div>
+
+                <div className="row">
+                    <div className="col-25">
+                        <p className="hide-text">Message</p>
+                    </div>
+                    <div className="col-75">
+                        <p className="message">
+                            We will send a Verification Code to this number via SMS (or voice message).
+                        </p>
+                    </div>
+                </div>
+
                 <div className="row">
                     <div className="col-25">
                         <label htmlFor="addrsearch">Search Address</label>
@@ -101,7 +113,7 @@ class LandingPage extends Component {
                     <div className="col-75">
                         <p className="error">{error}</p>
                     </div>
-                </div>      
+                </div>     
 
                 <div className="row">
                     <div className="col-25">
@@ -114,6 +126,17 @@ class LandingPage extends Component {
                             disabled={!this.onCanSubmit()}
                             onClick={this.props.onHandleSubmit}
                         />
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-25">
+                        <p className="hide-text">Message</p>
+                    </div>
+                    <div className="col-75">
+                        <p className="message">
+                            By clicking on the Register button to use our services you agree to be bound by the terms of use.
+                        </p>
                     </div>
                 </div>
             </div>

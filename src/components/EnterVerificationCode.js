@@ -51,7 +51,6 @@ class EnterVerificationCode extends Component {
         let {generatedPin} = this.state;
 
         if (this.onCanSubmit()) {
-            console.log("OK to Submit!!!"); 
             this.props.setVerificationCode(generatedPin);
         }
     }
@@ -68,7 +67,7 @@ class EnterVerificationCode extends Component {
         return (
             <div className="container">
                 <div className="row">
-                    <h3>Phone Number Verification</h3>
+                    <h3>Verify Your </h3>
                 </div>
                 <div className="row App-intro">
                     We have sent a pin code in a text message to the number you have provided <strong>{phoneNumber}</strong>.

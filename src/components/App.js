@@ -65,17 +65,11 @@ class App extends Component {
           } else {
             this.updateState(null, 'eMail', eMail);
           }
-/*
-              validateEmail(eMail)
-              .then(eMail => this.updateState(null, 'eMail', eMail))
-              .catch(error => this.updateState(error, 'eMail', eMail))
-*/
         }
     }
   }
 
   onChange(event) {
-    console.log('onChange FIRED!!!');
     let targetName = event.target.name;
     let targetValue = event.target.value;
 
@@ -169,7 +163,6 @@ class App extends Component {
   onCanSubmit() {
     let {error, errors} = this.state;
 
-    console.log('onCanSubmit FIRED!!!');
     return error || Object.values(errors).indexOf(true) > -1
         ? false
         : true;
