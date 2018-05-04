@@ -59,12 +59,18 @@ class App extends Component {
         if (eMail.length === 0) {
             this.updateState(null, 'eMail', eMail);
         } else {
+          validateEmail(eMail)
+            .then(value => this.updateState(null, 'eMail', eMail))
+            .catch(error => this.updateState(error, 'eMail', eMail)) 
           //validate the value we have
+
+          /*
           if (!validateEmail(eMail)) {
             this.updateState('Unexpected email format', 'eMail', eMail);
           } else {
             this.updateState(null, 'eMail', eMail);
           }
+          */
         }
     }
   }
@@ -95,6 +101,7 @@ class App extends Component {
     }
 
     if (targetName === 'eMail') {
+      /*
       if (targetValue.length === 0) {
         error = 'An email address is required'; 
       } else {
@@ -103,15 +110,19 @@ class App extends Component {
         } else {
           error = null;
         }
-      /*
-        validateEmail(eMail)
-            .then(eMail => error = this.updateState(null))
-            .catch(error => error = this.updateState(error)) 
+      }
       */
+      if (targetValue.length === 0) {
+          error = 'An email address is required';
+      } else {
+        validateEmail(targetValue)
+          .then(email => this.updateState(null, targetName, targetValue))
+          .catch(error => this.updateState(error, targetName, targetValue)) 
       }
     }
 
     if (targetName === 'phoneNumber') {
+      /*
       if (targetValue.length === 0) {
         error = 'Telephone number is required';
       } else {
@@ -120,12 +131,16 @@ class App extends Component {
         } else {
           error = null;
         }
-        /*
-        validatePhoneNo(phoneNumber)
-        .then(phoneNumber => error = this.updateState(null))
-        .catch(error => error = this.updateState(error)) 
-        */
       }
+      */
+      if (targetValue.length === 0) {
+        error = 'Telephone number is required';
+      } else {
+        validatePhoneNo(targetValue)
+          .then(phone => this.updateState(null, targetName, targetValue))
+          .catch(error => this.updateState(error, targetName, targetValue)) 
+      }
+        
     }   
         
     if (targetName === 'addrSearch') {
@@ -219,7 +234,9 @@ class App extends Component {
                 setVerificationCode={this.setVerificationCode}
               />
             :
-            <VerificationSuccess />
+            <VerificationSuccess 
+              name={name}
+            />
         }
       </div>
     );
