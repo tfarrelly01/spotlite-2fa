@@ -4,6 +4,9 @@ const REGEXP_PHONE = /^[\s()+-]*([0-9][\s()+-]*){6,20}$/
 
 export function validateEmail( email ){
 	return new Promise( ( resolve, reject ) => {
+		if (email.length === 0) {
+			reject('An email address is required');
+		} 
 		REGEXP_EMAIL.test( String(email).toLowerCase() ) ? resolve(email) : reject(`Unexpected email address format`);
 	} );
 }
@@ -13,13 +16,3 @@ export function validatePhoneNo( phoneNumber ){
 		REGEXP_PHONE.test( String(phoneNumber)) ? resolve(phoneNumber) : reject(`Unexpected phone number format`);
 	} );
 }
-
-/*
-export function validateEmail(email) {
-	return REGEXP_EMAIL.test(String(email).toLowerCase());
-}
-
-export function validatePhoneNo(phoneNumber) {
-	return REGEXP_PHONE.test(String(phoneNumber));
-}
-*/

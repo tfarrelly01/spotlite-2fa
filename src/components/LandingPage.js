@@ -1,12 +1,64 @@
 import React, { Component } from 'react';
 
+import InputAddrSearchTerm from './InputAddrSearchTerm';
 import '../css/LandingPage.css';
+
+import {getRequest} from '../utils/Common';
 
 class LandingPage extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            addrSearchTerm: '',
+            addrSearchResults: {},
+        }
+        this.onChangeEvt = this.onChangeEvt.bind(this);
+        this.onBlurEvt = this.onBlurEvt.bind(this);
         this.onCanSubmit = this.onCanSubmit.bind(this);
+    }
+
+    componentWillUpdate( nextProps, nextState ){
+        let {addrSearchTerm} = nextState;
+
+        if (nextState.addrSearchTerm && nextState.addrSearchTerm !== this.state.addrSearchTerm) {
+            this.loadData(nextState.addrSearchTerm);
+        }
+    }
+
+    loadData (searchTerm) {
+        console.log('Load Addresses FIRED!!!');
+        console.log('Search Term:', searchTerm);
+
+        const URI = `https://api.edq.com/capture/address/v2/search?query=${searchTerm}&country=GBR&take=100
+        &Auth-Token=81837610-8308-42d3-8288-41785455ebe3`;
+        
+        getRequest(URI)
+            .then( response => {
+                this.setState({
+                    addrSearchResults: response
+                });
+                console.log('response:::', response);
+            })
+            .catch( err => alert( err ) );
+    }
+
+    onChangeEvt(event) {
+        const targetValue = event.target.value;
+
+        this.props.setError(null);
+
+        this.setState({
+            addrSearchTerm: targetValue
+        })
+    }
+
+    onBlurEvt(event) {
+        const targetValue = event.target.value;
+
+        this.setState({
+            addrSearchTerm: targetValue
+        })
     }
 
     onCanSubmit() {
@@ -14,7 +66,8 @@ class LandingPage extends Component {
     }
 
     render() {
-        let {name, eMail, addrSearch, phoneNumber, error, errors} = this.props;
+        let {name, eMail, phoneNumber, error, errors} = this.props;
+        let {addrSearchTerm, addrSearchResults} = this.state;
         return (
             <div className="container">
                 <div className="row">
@@ -88,23 +141,13 @@ class LandingPage extends Component {
                     </div>
                 </div>
 
-                <div className="row">
-                    <div className="col-25">
-                        <label htmlFor="addrsearch">Search Address</label>
-                    </div>
-                    <div className="col-75">
-                        <input
-                            className={errors.addrSearch ? "error" : ""} 
-                            type="search" 
-                            id="addrsearch" 
-                            name="addrSearch" 
-                            placeholder="Enter Post Code or Street Name"
-                            value={addrSearch}
-                            onChange={this.props.onChange}
-                            onBlur={this.props.onBlurEvent}
-                        />
-                    </div>
-                </div>
+                <InputAddrSearchTerm 
+                    addrSearchTerm={addrSearchTerm} 
+                    onChangeEvt={this.onChangeEvt}
+                    onBlurEvt={this.onBlurEvt}
+                />
+
+
 
                 <div className="row">
                     <div className="col-25">

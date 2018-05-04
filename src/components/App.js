@@ -13,7 +13,7 @@ class App extends Component {
     this.state = {
         name: '',
         eMail: '',
-        addrSearch: '',
+        selectedAddr: {},
         phoneNumber: '',
         generatedPin: '',
         verificationCode: '',
@@ -21,7 +21,6 @@ class App extends Component {
         errors: {
           name: true,
           eMail: true,
-          addrSearch: true,
           phoneNumber: true,
         }
     }
@@ -31,25 +30,8 @@ class App extends Component {
     this.onCanSubmit = this.onCanSubmit.bind(this);
     this.onHandleSubmit = this.onHandleSubmit.bind(this);
     this.setVerificationCode = this.setVerificationCode.bind(this);
+    this.setError = this.setError.bind(this);
   }
-
-  /*
-  componentWillUpdate(nextProps, nextState) {
-    //      super.componentWillUpdate(nextProps, nextState );
-      let {eMail} = nextState;
-  
-      if (eMail !== undefined && eMail !== this.state.eMail) {
-          if (eMail.length === 0) {
-              this.updateState(null);
-          } else {
-              //validate the value we have
-              validateEmail(eMail)
-              .then(eMail => this.updateState(null))
-              .catch(error => this.updateState(error))
-          }
-      }
-  }
-  */
   
   componentWillUpdate(nextProps, nextState) {
     //      super.componentWillUpdate(nextProps, nextState );
@@ -59,18 +41,10 @@ class App extends Component {
         if (eMail.length === 0) {
             this.updateState(null, 'eMail', eMail);
         } else {
+          //validate the value we have
           validateEmail(eMail)
             .then(value => this.updateState(null, 'eMail', eMail))
             .catch(error => this.updateState(error, 'eMail', eMail)) 
-          //validate the value we have
-
-          /*
-          if (!validateEmail(eMail)) {
-            this.updateState('Unexpected email format', 'eMail', eMail);
-          } else {
-            this.updateState(null, 'eMail', eMail);
-          }
-          */
         }
     }
   }
@@ -86,7 +60,6 @@ class App extends Component {
   }
 
   onBlurEvent(event) {
-    // const {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode, errors} = this.state;
 
     let targetName = event.target.name;
     let targetValue = event.target.value;
@@ -101,17 +74,6 @@ class App extends Component {
     }
 
     if (targetName === 'eMail') {
-      /*
-      if (targetValue.length === 0) {
-        error = 'An email address is required'; 
-      } else {
-        if (!validateEmail(targetValue)) {
-          error = 'Unexpected email format';
-        } else {
-          error = null;
-        }
-      }
-      */
       if (targetValue.length === 0) {
           error = 'An email address is required';
       } else {
@@ -122,34 +84,14 @@ class App extends Component {
     }
 
     if (targetName === 'phoneNumber') {
-      /*
-      if (targetValue.length === 0) {
-        error = 'Telephone number is required';
-      } else {
-        if (!validatePhoneNo(targetValue)) {
-          error = 'Unexpected phone number format';
-        } else {
-          error = null;
-        }
-      }
-      */
       if (targetValue.length === 0) {
         error = 'Telephone number is required';
       } else {
         validatePhoneNo(targetValue)
           .then(phone => this.updateState(null, targetName, targetValue))
           .catch(error => this.updateState(error, targetName, targetValue)) 
-      }
-        
+      }   
     }   
-        
-    if (targetName === 'addrSearch') {
-      if (targetValue.length === 0) {
-        error = 'Your address is required';
-      } else {
-        error = null;
-      }
-    }
 
     if (targetName === 'verificationCode') {
       if (targetValue.length === 0) {
@@ -172,6 +114,12 @@ class App extends Component {
         ...this.state.errors, 
         [targetName]: error ? true : false
       }
+    });
+  }
+
+  setError(error) {
+    this.setState({
+      error
     });
   }
 
@@ -204,7 +152,7 @@ class App extends Component {
   }
 
   render() {
-    let {name, eMail, addrSearch, phoneNumber, generatedPin, verificationCode, error, errors} = this.state;
+    let {name, eMail, selectedAddr, phoneNumber, generatedPin, verificationCode, error, errors} = this.state;
     return (
       <div className="App">  
         <header className="App-header">
@@ -216,10 +164,11 @@ class App extends Component {
             <LandingPage
               name={name}
               eMail={eMail}
-              addrSearch={addrSearch}
+              selectedAddr={selectedAddr}
               phoneNumber={phoneNumber}
               error={error}
               errors={errors}
+              setError={this.setError}
               onChange={this.onChange}
               onBlurEvent={this.onBlurEvent}
               onCanSubmit={this.onCanSubmit}
