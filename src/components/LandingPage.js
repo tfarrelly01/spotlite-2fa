@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-
+import Phone from 'react-phone-number-input';
+import 'react-phone-number-input/rrui.css';
+import 'react-phone-number-input/style.css';
 import InputAddrSearchTerm from './InputAddrSearchTerm';
+import AddressList from './AddressList';
 import '../css/LandingPage.css';
 
 import {getRequest} from '../utils/Common';
@@ -12,15 +15,16 @@ class LandingPage extends Component {
         this.state = {
             addrSearchTerm: '',
             addrSearchResults: {},
+
         }
         this.onChangeEvt = this.onChangeEvt.bind(this);
         this.onBlurEvt = this.onBlurEvt.bind(this);
         this.onCanSubmit = this.onCanSubmit.bind(this);
+
+        this.onPhone = this.onPhone.bind(this);
     }
 
-    componentWillUpdate( nextProps, nextState ){
-        let {addrSearchTerm} = nextState;
-
+    componentWillUpdate(nextProps, nextState) {
         if (nextState.addrSearchTerm && nextState.addrSearchTerm !== this.state.addrSearchTerm) {
             this.loadData(nextState.addrSearchTerm);
         }
@@ -38,7 +42,6 @@ class LandingPage extends Component {
                 this.setState({
                     addrSearchResults: response
                 });
-                console.log('response:::', response);
             })
             .catch( err => alert( err ) );
     }
@@ -54,11 +57,26 @@ class LandingPage extends Component {
     }
 
     onBlurEvt(event) {
+
+        // Check that the email address is in the correct format 
+        // email address format ok - GET request to Experian API
+        // if address not found / recognided - Warning
+
+
+        // Mobile Phone Number - GET request to Experian API. 
+        // if address doesnt not pass the check 
+        // invalid telephone format (ERROR) ere we need to check format
+        // before GET request
+        // Address not found / recognised - Warning 
         const targetValue = event.target.value;
 
         this.setState({
             addrSearchTerm: targetValue
         })
+    }
+
+    onPhone(event) {
+        console.log('onPhone - event:::', event);
     }
 
     onCanSubmit() {
@@ -112,6 +130,7 @@ class LandingPage extends Component {
                         />
                     </div>
                 </div>
+                {/*
                 <div className="row">
                     <div className="col-25">
                         <label htmlFor="mphone">Phone Number</label>
@@ -125,6 +144,24 @@ class LandingPage extends Component {
                             placeholder="Enter your phone number"
                             value={phoneNumber}
                             onChange={this.props.onChange}
+                            onBlur={this.props.onBlurEvent}
+                        />
+                    </div>
+                </div>
+                */}
+
+                <div className="row">
+                    <div className="col-25">
+                        <label htmlFor="mphone">Phone Number</label>
+                    </div>
+                    <div className="col-75">
+                        <Phone
+                            className={errors.phoneNumber ? "error" : ""}
+                            type="tel"
+                            country="GB"
+                            placeholder="Enter your phone number"
+                            value={phoneNumber}
+                            onChange={this.onPhone}
                             onBlur={this.props.onBlurEvent}
                         />
                     </div>
@@ -146,8 +183,15 @@ class LandingPage extends Component {
                     onChangeEvt={this.onChangeEvt}
                     onBlurEvt={this.onBlurEvt}
                 />
-
-
+                {
+                    addrSearchResults && addrSearchResults.count > 0
+                    ?
+                        <AddressList 
+                            addrSearchResults={addrSearchResults}
+                        />
+                    :
+                        null
+                }
 
                 <div className="row">
                     <div className="col-25">

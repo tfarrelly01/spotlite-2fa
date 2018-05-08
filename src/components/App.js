@@ -4,6 +4,7 @@ import '../css/App.css';
 import LandingPage from './LandingPage';
 import EnterVerificationCode from './EnterVerificationCode';
 import VerificationSuccess from './VerificationSuccess';
+import Example from './Example';
 import {validateEmail, validatePhoneNo} from '../utils/Validation';
 
 class App extends Component {
