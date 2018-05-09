@@ -57,11 +57,9 @@ class LandingPage extends Component {
     }
 
     onBlurEvt(event) {
-
         // Check that the email address is in the correct format 
         // email address format ok - GET request to Experian API
         // if address not found / recognided - Warning
-
 
         // Mobile Phone Number - GET request to Experian API. 
         // if address doesnt not pass the check 
@@ -126,7 +124,7 @@ class LandingPage extends Component {
                             placeholder="Your email address.."
                             value={eMail}
                             onChange={this.props.onChange}
-                            onBlur={this.props.onBlurEvent}
+                            onBlur={this.props.onEmailBlur}
                         />
                     </div>
                 </div>
@@ -160,10 +158,9 @@ class LandingPage extends Component {
                             type="tel"
                             country="GB"
                             placeholder="Enter your phone number"
-                            name={phoneNumber}
                             value={phoneNumber}
                             onChange={this.onPhoneNoChange}
-                            onBlur={this.props.onBlurEvent}
+                            onBlur={this.props.onPhoneNoBlur}
                         />
                     </div>
                 </div>

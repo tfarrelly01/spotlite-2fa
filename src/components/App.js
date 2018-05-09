@@ -28,7 +28,9 @@ class App extends Component {
     }
     this.onChange = this.onChange.bind(this);
     this.onBlurEvent = this.onBlurEvent.bind(this);
+    this.onEmailBlur = this.onEmailBlur.bind(this);
     this.checkEmailExists = this.checkEmailExists.bind(this);
+    this.onPhoneNoBlur = this.onPhoneNoBlur.bind(this);
     this.checkPhoneNumberExists = this.checkPhoneNumberExists.bind(this);
     this.updateState = this.updateState.bind(this);
     this.onCanSubmit = this.onCanSubmit.bind(this);
@@ -65,13 +67,10 @@ class App extends Component {
 
   onBlurEvent(event) {
 
-    let targetName = event.target.name || 'phoneNumber';
+    let targetName = event.target.name;
     let targetValue = event.target.value;
     let error;
 
-    console.log('targetName:', targetName);
-    console.log('targetValue:', targetValue);
-    
     if (targetName === 'name') {
       if (targetValue.length === 0) {
         error = 'Your name is required';
@@ -79,37 +78,6 @@ class App extends Component {
         error = null;
       }
     }
-
-    if (targetName === 'eMail') {
-      if (targetValue.length === 0) {
-          error = 'An email address is required';
-      } else {
-              /*
-        checkEmailExists(targetValue)
-          .then(res => this.updateState(null, targetName, targetValue))
-          .catch(error => this.updateState(error, targetName, targetValue))
-      */
-     console.log('targetValue:', targetValue);
-        this.checkEmailExists(targetValue)
-      
-        validateEmail(targetValue)
-          .then(email => this.updateState(null, targetName, targetValue))
-          .catch(error => this.updateState(error, targetName, targetValue)) 
-      }
-      
-    }
-
-    if (targetName === 'phoneNumber') {
-      if (targetValue.length === 0) {
-        error = 'Telephone number is required';
-      } else {
-        this.checkPhoneNumberExists(targetValue);
-        validatePhoneNo(targetValue)
-          .then(phone => this.updateState(null, targetName, targetValue))
-          .catch(error => this.updateState(error, targetName, targetValue)) 
-
-      } 
-    }   
 
     if (targetName === 'verificationCode') {
       if (targetValue.length === 0) {
@@ -175,33 +143,81 @@ class App extends Component {
       verificationCode: code
     });
   }
+    
+  onEmailBlur(event) {
+    const emailAddress = event.target.value;
+    const targetName = event.target.name;
 
-  checkEmailExists(data) {
+    if (emailAddress.length === 0) {
+      this.updateState('An email address is required', targetName, emailAddress);
+    } else {  
+      validateEmail(emailAddress)
+        .then((email) => {
+          return this.checkEmailExists(emailAddress)
+            .then((data) => {
+              console.log('DATA::', data);
+              if (data.Certainty === 'verified' || data.Certainty === 'unknown') {
+                this.updateState(null, targetName, emailAddress);               
+              } else {
+                let error = `The email address has been classified as ${data.Certainty} (${data.VerboseOutput}). Please check and re-enter`;
+                this.updateState(error, targetName, emailAddress);
+              }
+            })
+            .catch(err=> err)
+        })
+        .catch(err => this.updateState(err, targetName, emailAddress)) 
+    } 
+  }
+
+  checkEmailExists(emailAddress) {
+    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/EmailValidate/1.0/';
     const options = {
-      Email: data, 
+      Email: emailAddress, 
       Timeout: '5',
       Verbose: 'True'
     };
 
-    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/EmailValidate/1.0/';
-    postRequest(URI, options)
-        .then( response => {
-console.log('response:', response);
-        })
-        .catch( err => alert( err ) );
+    return new Promise( ( resolve, reject ) => {
+      postRequest(URI, options)
+        .then(response => resolve(response)) 
+        .catch(err => reject(err));
+    } );
   }
 
-  checkPhoneNumberExists(data) {
+  onPhoneNoBlur(event) {
+    const phoneNumber = event.target.value || '';
+    const targetName = 'phoneNumber';
+
+    if (phoneNumber.length === 0) {
+      this.updateState('Telephone number is required', targetName, phoneNumber);
+    } else {  
+      validatePhoneNo(phoneNumber)
+        .then((phone) => {
+          return this.checkPhoneNumberExists(phone)
+            .then((data) => {
+              if (data.ResultCode > 0) {
+                this.updateState(null, targetName, phone);               
+              } else {
+                this.updateState('Telephone number not verified, please re-enter', targetName, phone);
+              }
+            })
+            .catch(error => error)
+        })
+        .catch(error => this.updateState(error, targetName, phoneNumber)) 
+    } 
+  }
+
+  checkPhoneNumberExists(phoneNumber) {
+    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidate/3.0/';
     const options = {
-      Number: data
+      Number: phoneNumber
     };
 
-    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidate/3.0/';
-    postRequest(URI, options)
-        .then( response => {
-console.log('response:', response);
-        })
-        .catch( err => alert( err ) );
+    return new Promise( ( resolve, reject ) => {
+      postRequest(URI, options)
+        .then(response => resolve(response)) 
+        .catch(err => reject(err));
+    } );
   }
 
   render() {
@@ -223,6 +239,8 @@ console.log('response:', response);
               errors={errors}
               setError={this.setError}
               setPhoneNumber={this.setPhoneNumber}
+              onEmailBlur={this.onEmailBlur}              
+              onPhoneNoBlur={this.onPhoneNoBlur}
               onChange={this.onChange}
               onBlurEvent={this.onBlurEvent}
               onCanSubmit={this.onCanSubmit}

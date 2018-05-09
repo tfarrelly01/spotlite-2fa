@@ -11,7 +11,6 @@ export function getRequest(URI, options) {
 
 export function postRequest(URI, options) {
   // Performs Post request on passed URI and options
-  console.log('options:', options)
   return fetch(URI, {
     method: 'POST',
     headers: {
