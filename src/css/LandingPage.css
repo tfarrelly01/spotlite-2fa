@@ -17,7 +17,7 @@
     text-align-last: center;
   }
 
-input[type=text], input[type=search], input[type=email], input[type=tel], select, textarea {
+input[type=text], input[type=search], input[type=email], input[type=tel], select, textarea, Phone {
     width: 100%;
     padding: 12px;
     border: 1px solid #ccc;
@@ -109,7 +109,7 @@ input[type=submit]:disabled {
 
 /* Responsive layout - when the screen is greater than 900px wide input field lengths are set to 75% of normal size */
 @media screen and (min-width: 900px) {
-    input[type=text], input[type=search], input[type=email], input[type=tel], select, textarea { 
+    input[type=text], input[type=search], input[type=email], input[type=tel], .phone, select, textarea { 
         width: 75%;
         margin-top: 0;
     }

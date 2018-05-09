@@ -20,8 +20,7 @@ class LandingPage extends Component {
         this.onChangeEvt = this.onChangeEvt.bind(this);
         this.onBlurEvt = this.onBlurEvt.bind(this);
         this.onCanSubmit = this.onCanSubmit.bind(this);
-
-        this.onPhone = this.onPhone.bind(this);
+        this.onPhoneNoChange = this.onPhoneNoChange.bind(this);
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -47,6 +46,7 @@ class LandingPage extends Component {
     }
 
     onChangeEvt(event) {
+        const targetName= event.target.name;
         const targetValue = event.target.value;
 
         this.props.setError(null);
@@ -75,8 +75,8 @@ class LandingPage extends Component {
         })
     }
 
-    onPhone(event) {
-        console.log('onPhone - event:::', event);
+    onPhoneNoChange(phoneNumber) {
+        this.props.setPhoneNumber(phoneNumber);
     }
 
     onCanSubmit() {
@@ -156,12 +156,13 @@ class LandingPage extends Component {
                     </div>
                     <div className="col-75">
                         <Phone
-                            className={errors.phoneNumber ? "error" : ""}
+                            className={errors.phoneNumber ? "phone error" : "phone"}
                             type="tel"
                             country="GB"
                             placeholder="Enter your phone number"
+                            name={phoneNumber}
                             value={phoneNumber}
-                            onChange={this.onPhone}
+                            onChange={this.onPhoneNoChange}
                             onBlur={this.props.onBlurEvent}
                         />
                     </div>

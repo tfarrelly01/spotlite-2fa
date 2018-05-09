@@ -6,6 +6,7 @@ import EnterVerificationCode from './EnterVerificationCode';
 import VerificationSuccess from './VerificationSuccess';
 import Example from './Example';
 import {validateEmail, validatePhoneNo} from '../utils/Validation';
+import {postRequest} from '../utils/Common';
 
 class App extends Component {
   constructor(props) {
@@ -27,15 +28,17 @@ class App extends Component {
     }
     this.onChange = this.onChange.bind(this);
     this.onBlurEvent = this.onBlurEvent.bind(this);
+    this.checkEmailExists = this.checkEmailExists.bind(this);
+    this.checkPhoneNumberExists = this.checkPhoneNumberExists.bind(this);
     this.updateState = this.updateState.bind(this);
     this.onCanSubmit = this.onCanSubmit.bind(this);
     this.onHandleSubmit = this.onHandleSubmit.bind(this);
     this.setVerificationCode = this.setVerificationCode.bind(this);
     this.setError = this.setError.bind(this);
+    this.setPhoneNumber = this.setPhoneNumber.bind(this);
   }
   
   componentWillUpdate(nextProps, nextState) {
-    //      super.componentWillUpdate(nextProps, nextState );
     let {eMail} = nextState;
 
     if (eMail !== undefined && eMail !== this.state.eMail) {
@@ -62,10 +65,13 @@ class App extends Component {
 
   onBlurEvent(event) {
 
-    let targetName = event.target.name;
+    let targetName = event.target.name || 'phoneNumber';
     let targetValue = event.target.value;
     let error;
 
+    console.log('targetName:', targetName);
+    console.log('targetValue:', targetValue);
+    
     if (targetName === 'name') {
       if (targetValue.length === 0) {
         error = 'Your name is required';
@@ -78,20 +84,31 @@ class App extends Component {
       if (targetValue.length === 0) {
           error = 'An email address is required';
       } else {
+              /*
+        checkEmailExists(targetValue)
+          .then(res => this.updateState(null, targetName, targetValue))
+          .catch(error => this.updateState(error, targetName, targetValue))
+      */
+     console.log('targetValue:', targetValue);
+        this.checkEmailExists(targetValue)
+      
         validateEmail(targetValue)
           .then(email => this.updateState(null, targetName, targetValue))
           .catch(error => this.updateState(error, targetName, targetValue)) 
       }
+      
     }
 
     if (targetName === 'phoneNumber') {
       if (targetValue.length === 0) {
         error = 'Telephone number is required';
       } else {
+        this.checkPhoneNumberExists(targetValue);
         validatePhoneNo(targetValue)
           .then(phone => this.updateState(null, targetName, targetValue))
           .catch(error => this.updateState(error, targetName, targetValue)) 
-      }   
+
+      } 
     }   
 
     if (targetName === 'verificationCode') {
@@ -124,6 +141,13 @@ class App extends Component {
     });
   }
 
+  setPhoneNumber(phoneNumber) {
+    // Clear previous error message if user enters a character in field 
+    let error = this.state.error  ? null : this.state.error;
+
+    this.updateState(error, 'phoneNumber', phoneNumber)
+  }
+
   onCanSubmit() {
     let {error, errors} = this.state;
 
@@ -152,6 +176,34 @@ class App extends Component {
     });
   }
 
+  checkEmailExists(data) {
+    const options = {
+      Email: data, 
+      Timeout: '5',
+      Verbose: 'True'
+    };
+
+    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/EmailValidate/1.0/';
+    postRequest(URI, options)
+        .then( response => {
+console.log('response:', response);
+        })
+        .catch( err => alert( err ) );
+  }
+
+  checkPhoneNumberExists(data) {
+    const options = {
+      Number: data
+    };
+
+    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidate/3.0/';
+    postRequest(URI, options)
+        .then( response => {
+console.log('response:', response);
+        })
+        .catch( err => alert( err ) );
+  }
+
   render() {
     let {name, eMail, selectedAddr, phoneNumber, generatedPin, verificationCode, error, errors} = this.state;
     return (
@@ -170,6 +222,7 @@ class App extends Component {
               error={error}
               errors={errors}
               setError={this.setError}
+              setPhoneNumber={this.setPhoneNumber}
               onChange={this.onChange}
               onBlurEvent={this.onBlurEvent}
               onCanSubmit={this.onCanSubmit}
