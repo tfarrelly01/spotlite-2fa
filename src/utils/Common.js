@@ -20,5 +20,5 @@ export function postRequest(URI, options) {
     body: JSON.stringify(options)
   })
   .then(res => res.json())
-  .catch(err => err)
+  .catch((err) => {console.log('err::', err); return err;})
 }

@@ -15,7 +15,8 @@ class App extends Component {
     this.state = {
         name: '',
         eMail: '',
-        selectedAddr: {},
+        selectedAddress: {},
+        addressSelected: false,
         phoneNumber: '',
         generatedPin: '',
         verificationCode: '',
@@ -29,9 +30,8 @@ class App extends Component {
     this.onChange = this.onChange.bind(this);
     this.onBlurEvent = this.onBlurEvent.bind(this);
     this.onEmailBlur = this.onEmailBlur.bind(this);
-    this.checkEmailExists = this.checkEmailExists.bind(this);
     this.onPhoneNoBlur = this.onPhoneNoBlur.bind(this);
-    this.checkPhoneNumberExists = this.checkPhoneNumberExists.bind(this);
+    this.getData = this.getData.bind(this);
     this.updateState = this.updateState.bind(this);
     this.onCanSubmit = this.onCanSubmit.bind(this);
     this.onHandleSubmit = this.onHandleSubmit.bind(this);
@@ -117,24 +117,24 @@ class App extends Component {
   }
 
   onCanSubmit() {
-    let {error, errors} = this.state;
+    let {error, errors, addressSelected} = this.state;
 
-    return error || Object.values(errors).indexOf(true) > -1
-        ? false
-        : true;
+    return error || Object.values(errors).indexOf(true) > -1 || !addressSelected
+      ? false
+      : true;
   }
 
   onHandleSubmit() {
    //   let {generatedPin} = this.state;
-    console.log("onHandleSubmit FIRED !!!");
+      console.log("onHandleSubmit FIRED !!!");
     if (this.onCanSubmit()) {
-        console.log("OK to Submit!!!"); 
+      console.log("OK to Submit!!!"); 
       this.setState({
         generatedPin: '1234'
       });
     }     
     else {
-        console.log("CANNOT Submit!!!");
+      console.log("CANNOT Submit!!!");
     }
   }
 
@@ -148,14 +148,21 @@ class App extends Component {
     const emailAddress = event.target.value;
     const targetName = event.target.name;
 
+    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/EmailValidate/1.0/';
+    const options = {
+      Email: emailAddress, 
+      Timeout: '5',
+      Verbose: 'True'
+    };
+
     if (emailAddress.length === 0) {
       this.updateState('An email address is required', targetName, emailAddress);
     } else {  
       validateEmail(emailAddress)
         .then((email) => {
-          return this.checkEmailExists(emailAddress)
+          return this.getData(URI, options)
             .then((data) => {
-              console.log('DATA::', data);
+              console.log('data:', data);
               if (data.Certainty === 'verified' || data.Certainty === 'unknown') {
                 this.updateState(null, targetName, emailAddress);               
               } else {
@@ -169,31 +176,21 @@ class App extends Component {
     } 
   }
 
-  checkEmailExists(emailAddress) {
-    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/EmailValidate/1.0/';
-    const options = {
-      Email: emailAddress, 
-      Timeout: '5',
-      Verbose: 'True'
-    };
-
-    return new Promise( ( resolve, reject ) => {
-      postRequest(URI, options)
-        .then(response => resolve(response)) 
-        .catch(err => reject(err));
-    } );
-  }
-
   onPhoneNoBlur(event) {
     const phoneNumber = event.target.value || '';
     const targetName = 'phoneNumber';
+
+    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidate/3.0/';
+    const options = {
+      Number: phoneNumber
+    };
 
     if (phoneNumber.length === 0) {
       this.updateState('Telephone number is required', targetName, phoneNumber);
     } else {  
       validatePhoneNo(phoneNumber)
         .then((phone) => {
-          return this.checkPhoneNumberExists(phone)
+          return this.getData(URI, options)
             .then((data) => {
               if (data.ResultCode > 0) {
                 this.updateState(null, targetName, phone);               
@@ -207,21 +204,16 @@ class App extends Component {
     } 
   }
 
-  checkPhoneNumberExists(phoneNumber) {
-    const URI = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidate/3.0/';
-    const options = {
-      Number: phoneNumber
-    };
-
+  getData(URI, options) {
     return new Promise( ( resolve, reject ) => {
       postRequest(URI, options)
-        .then(response => resolve(response)) 
-        .catch(err => reject(err));
+        .then((response) => {console.log('getData response:', response); resolve(response)}) 
+        .catch((err) => { console.log('getData err:', err); reject(err)});
     } );
   }
 
   render() {
-    let {name, eMail, selectedAddr, phoneNumber, generatedPin, verificationCode, error, errors} = this.state;
+    let {name, eMail, selectedAddress, phoneNumber, generatedPin, verificationCode, error, errors} = this.state;
     return (
       <div className="App">  
         <header className="App-header">
@@ -233,7 +225,7 @@ class App extends Component {
             <LandingPage
               name={name}
               eMail={eMail}
-              selectedAddr={selectedAddr}
+              selectedAddress={selectedAddress}
               phoneNumber={phoneNumber}
               error={error}
               errors={errors}

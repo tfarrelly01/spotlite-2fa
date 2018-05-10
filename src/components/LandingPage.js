@@ -15,6 +15,7 @@ class LandingPage extends Component {
         this.state = {
             addrSearchTerm: '',
             addrSearchResults: {},
+            addressLink: '' 
 
         }
         this.onChangeEvt = this.onChangeEvt.bind(this);
@@ -27,10 +28,14 @@ class LandingPage extends Component {
         if (nextState.addrSearchTerm && nextState.addrSearchTerm !== this.state.addrSearchTerm) {
             this.loadData(nextState.addrSearchTerm);
         }
+        if (nextState.addressLink && nextState.addressLink !== this.state.addressLink) {
+            this.loadAddress(nextState.addressLink);
+        }
+
     }
 
     loadData (searchTerm) {
-        console.log('Load Addresses FIRED!!!');
+        console.log('LoadData FIRED!!!');
         console.log('Search Term:', searchTerm);
 
         const URI = `https://api.edq.com/capture/address/v2/search?query=${searchTerm}&country=GBR&take=100
@@ -42,30 +47,39 @@ class LandingPage extends Component {
                     addrSearchResults: response
                 });
             })
-            .catch( err => alert( err ) );
+            .catch(err => err);
+    }
+
+    loadAddress (searchTerm) {
+        console.log('Load Addresses FIRED!!!');
+        console.log('Search Term:', searchTerm);
+
+        const URI = `${searchTerm}&Auth-Token=81837610-8308-42d3-8288-41785455ebe3`
+
+        getRequest(URI)
+            .then( response => {
+console.log('Address Selected::', response);
+       
+            })
+            .catch(err => err);
     }
 
     onChangeEvt(event) {
-        const targetName= event.target.name;
+        const targetName = event.target.name;
         const targetValue = event.target.value;
+
+        console.log('onChangeEvt fired!!!');
+        console.log('event.target.name', event.target.name);
+        console.log('event.target.value', event.target.value);
 
         this.props.setError(null);
 
         this.setState({
-            addrSearchTerm: targetValue
+            [targetName]: targetValue
         })
     }
 
     onBlurEvt(event) {
-        // Check that the email address is in the correct format 
-        // email address format ok - GET request to Experian API
-        // if address not found / recognided - Warning
-
-        // Mobile Phone Number - GET request to Experian API. 
-        // if address doesnt not pass the check 
-        // invalid telephone format (ERROR) ere we need to check format
-        // before GET request
-        // Address not found / recognised - Warning 
         const targetValue = event.target.value;
 
         this.setState({
@@ -186,6 +200,7 @@ class LandingPage extends Component {
                     ?
                         <AddressList 
                             addrSearchResults={addrSearchResults}
+                            onChangeEvt={this.onChangeEvt}
                         />
                     :
                         null

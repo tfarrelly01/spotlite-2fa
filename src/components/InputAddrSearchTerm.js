@@ -10,7 +10,7 @@ const InputAddrSearchTerm = props => (
 			<input
 				type="search" 
 				id="addrsearchTerm" 
-				name="addrsearchTerm" 
+				name="addrSearchTerm" 
 				placeholder="Enter Post Code or Street Name"
 				value={props.addrSearchTerm}
 				onChange={props.onChangeEvt}
