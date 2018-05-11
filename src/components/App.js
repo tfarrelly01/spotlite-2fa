@@ -4,9 +4,8 @@ import '../css/App.css';
 import LandingPage from './LandingPage';
 import EnterVerificationCode from './EnterVerificationCode';
 import VerificationSuccess from './VerificationSuccess';
-import Example from './Example';
 import {validateEmail, validatePhoneNo} from '../utils/Validation';
-import {postRequest} from '../utils/Common';
+import {postRequest, postApplicant} from '../utils/Common';
 
 class App extends Component {
   constructor(props) {
@@ -18,8 +17,10 @@ class App extends Component {
         selectedAddress: {},
         addressSelected: false,
         phoneNumber: '',
-        generatedPin: '',
+        pinGenerated: false,
+        pinVerified: false,
         verificationCode: '',
+generatedPin: '1234',
         error: null,
         errors: {
           name: true,
@@ -38,6 +39,7 @@ class App extends Component {
     this.setVerificationCode = this.setVerificationCode.bind(this);
     this.setError = this.setError.bind(this);
     this.setPhoneNumber = this.setPhoneNumber.bind(this);
+    this.setAddress = this.setAddress.bind(this);
   }
   
   componentWillUpdate(nextProps, nextState) {
@@ -93,10 +95,12 @@ class App extends Component {
   updateState (error, targetName, targetValue) {
     this.setState({
       ...this.state, 
+      selectedAddress: {
+        ...this.state.selectedAddress
+      },
       error: error, 
       [targetName]: targetValue, 
-      errors: 
-      {
+      errors: {
         ...this.state.errors, 
         [targetName]: error ? true : false
       }
@@ -107,6 +111,28 @@ class App extends Component {
     this.setState({
       error
     });
+  }
+
+  setAddress(address) {
+    this.setState({
+      ...this.state, 
+      addressSelected: true,
+      selectedAddress: {
+        ...this.state.selectedAddress,
+        contactAddr1: address[0].addressLine1,
+        contactAddr2: address[1].addressLine2,
+        contactAddr3: address[2].addressLine3,
+        contactCity: address[3].locality,
+        contactState: address[4].province,
+        contactPostCode: address[5].postalCode,
+        contactCountry: address[6].country
+      },
+      errors: {
+        ...this.state.errors
+      },
+    });
+
+    console.log('this.state - App :', this.state);
   }
 
   setPhoneNumber(phoneNumber) {
@@ -125,16 +151,26 @@ class App extends Component {
   }
 
   onHandleSubmit() {
-   //   let {generatedPin} = this.state;
-      console.log("onHandleSubmit FIRED !!!");
+    const {eMail} = this.state
+    let {pinGenerated} = this.state;
+
     if (this.onCanSubmit()) {
-      console.log("OK to Submit!!!"); 
-      this.setState({
-        generatedPin: '1234'
-      });
+        const URI = 'http://localhost:4090/home/applicant';
+        const options = {applicantEmail: eMail};
+        postApplicant(URI, options )
+        .then((data) => {
+          if (data.status === 'error') {
+            this.setState({error: data.error});
+          } else {
+            console.log('data:', data); return data; 
+            this.setState({pinGenerated: true});
+          }
+        })
+        .catch(error => this.setState({error: error.message || error}));
     }     
     else {
       console.log("CANNOT Submit!!!");
+      // generate error message - based on first flagged error. Ensure errors searched for are in form field order
     }
   }
 
@@ -213,24 +249,26 @@ class App extends Component {
   }
 
   render() {
-    let {name, eMail, selectedAddress, phoneNumber, generatedPin, verificationCode, error, errors} = this.state;
+    let {name, eMail, selectedAddress, addressSelected, phoneNumber, pinGenerated, generatedPin, pinVerified, verificationCode, error, errors} = this.state;
     return (
       <div className="App">  
         <header className="App-header">
           <img src={spotLiteLogo} className="App-logo" alt="logo" />
         </header>
     
-        { generatedPin.length === 0
+        { !pinGenerated
           ?
             <LandingPage
               name={name}
               eMail={eMail}
               selectedAddress={selectedAddress}
+              addressSelected={addressSelected}
               phoneNumber={phoneNumber}
               error={error}
               errors={errors}
               setError={this.setError}
               setPhoneNumber={this.setPhoneNumber}
+              setAddress={this.setAddress}
               onEmailBlur={this.onEmailBlur}              
               onPhoneNoBlur={this.onPhoneNoBlur}
               onChange={this.onChange}
@@ -238,11 +276,12 @@ class App extends Component {
               onCanSubmit={this.onCanSubmit}
               onHandleSubmit={this.onHandleSubmit}      
             />
-          : verificationCode.length === 0 || verificationCode !== generatedPin
+          : pinGenerated && !pinVerified
             ?
               <EnterVerificationCode 
                 phoneNumber={phoneNumber}
-                generatedPin={generatedPin}
+                pinGenerated={pinGenerated}
+            generatedPin={generatedPin}
                 verificationCode={verificationCode}
                 setVerificationCode={this.setVerificationCode}
               />

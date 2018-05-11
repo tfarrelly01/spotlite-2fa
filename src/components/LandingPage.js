@@ -14,12 +14,13 @@ class LandingPage extends Component {
 
         this.state = {
             addrSearchTerm: '',
-            addrSearchResults: {},
+            addrSearchResults: {
+                count: 0,
+                results: []
+            },
             addressLink: '' 
-
         }
         this.onChangeEvt = this.onChangeEvt.bind(this);
-        this.onBlurEvt = this.onBlurEvt.bind(this);
         this.onCanSubmit = this.onCanSubmit.bind(this);
         this.onPhoneNoChange = this.onPhoneNoChange.bind(this);
     }
@@ -31,15 +32,10 @@ class LandingPage extends Component {
         if (nextState.addressLink && nextState.addressLink !== this.state.addressLink) {
             this.loadAddress(nextState.addressLink);
         }
-
     }
 
     loadData (searchTerm) {
-        console.log('LoadData FIRED!!!');
-        console.log('Search Term:', searchTerm);
-
-        const URI = `https://api.edq.com/capture/address/v2/search?query=${searchTerm}&country=GBR&take=100
-        &Auth-Token=81837610-8308-42d3-8288-41785455ebe3`;
+        const URI = `https://api.edq.com/capture/address/v2/search?query=${searchTerm}&country=GBR&take=100`;
         
         getRequest(URI)
             .then( response => {
@@ -51,15 +47,24 @@ class LandingPage extends Component {
     }
 
     loadAddress (searchTerm) {
-        console.log('Load Addresses FIRED!!!');
-        console.log('Search Term:', searchTerm);
-
-        const URI = `${searchTerm}&Auth-Token=81837610-8308-42d3-8288-41785455ebe3`
-
+        const URI = `${searchTerm}`;
         getRequest(URI)
-            .then( response => {
-console.log('Address Selected::', response);
-       
+            .then( (response) => {
+                if (!response.message) {
+                    this.props.setAddress(response.address);    
+                    this.setState({
+                        ...this.state,
+                        addrSearchTerm: '',
+                        addrSearchResults: {
+                            ...this.state.addrSearchResults,
+                            count: 0,
+                            results: []
+                        },
+                        addressLink: ''
+                    });
+                } else {
+                    // error - i.e. response.message 
+                }
             })
             .catch(err => err);
     }
@@ -68,22 +73,10 @@ console.log('Address Selected::', response);
         const targetName = event.target.name;
         const targetValue = event.target.value;
 
-        console.log('onChangeEvt fired!!!');
-        console.log('event.target.name', event.target.name);
-        console.log('event.target.value', event.target.value);
-
         this.props.setError(null);
 
         this.setState({
             [targetName]: targetValue
-        })
-    }
-
-    onBlurEvt(event) {
-        const targetValue = event.target.value;
-
-        this.setState({
-            addrSearchTerm: targetValue
         })
     }
 
@@ -193,7 +186,6 @@ console.log('Address Selected::', response);
                 <InputAddrSearchTerm 
                     addrSearchTerm={addrSearchTerm} 
                     onChangeEvt={this.onChangeEvt}
-                    onBlurEvt={this.onBlurEvt}
                 />
                 {
                     addrSearchResults && addrSearchResults.count > 0

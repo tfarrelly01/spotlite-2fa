@@ -14,7 +14,6 @@ const InputAddrSearchTerm = props => (
 				placeholder="Enter Post Code or Street Name"
 				value={props.addrSearchTerm}
 				onChange={props.onChangeEvt}
-				onBlur={props.onBlurEvt}
 			/>
 		</div>
   </div>

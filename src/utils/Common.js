@@ -1,8 +1,24 @@
 import fetch from 'isomorphic-fetch';
 
-export function getRequest(URI, options) {
-  // Performs GET request on passed URI
+export function apiParse(data) {
+  console.log('data.status::', data.status);
+  switch (data.status) {
+    case "ok":
+      return data.result;
+    case "error":
+      throw new Error(data.error || 'Unknown Error');
+    default:
+      throw new Error('Unknown Status');
+  }
+}
+
+export function getRequest(URI) {
+  // Performs GET request on passed Experian URI
   return fetch(URI, {
+    method: 'GET',
+    headers: {
+      'Auth-Token': '81837610-8308-42d3-8288-41785455ebe3'
+    },
     Accept: 'application.json'
   })
   .then(data => data.json())
@@ -10,7 +26,7 @@ export function getRequest(URI, options) {
 }
 
 export function postRequest(URI, options) {
-  // Performs Post request on passed URI and options
+  // Performs Post request on passed Experian URI and options
   return fetch(URI, {
     method: 'POST',
     headers: {
@@ -21,4 +37,16 @@ export function postRequest(URI, options) {
   })
   .then(res => res.json())
   .catch((err) => {console.log('err::', err); return err;})
+}
+
+export function postApplicant(URI, options) {
+  return fetch(URI, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(options)
+  })
+  .then(res => res.json())
+  .catch(err => err)
 }
