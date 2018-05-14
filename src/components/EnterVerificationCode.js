@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import '../css/LandingPage.css';
-import {getNewPin} from '../utils/Common.js';
+import {postApplicant, getNewPin} from '../utils/Common.js';
 
 class EnterVerificationCode extends Component {
     constructor(props) {
         super(props);
         this.state = {
             verificationCode: '',
-            newPinSent: false,
-            pinSentMessage: null,
+            message: null,
             error: null
         }
         this.onChange = this.onChange.bind(this);
@@ -20,28 +19,40 @@ class EnterVerificationCode extends Component {
     }
 
     onChange(event) {
-        let {error} = this.state;
+        let {error, message} = this.state;
         let verificationCode = event.target.value;
 
-        // Clear previous error message if user enters a character in field 
+        // Clear previous error message or message if user enters a character in field 
         if (error) {
             this.setError(null);
+        }
+        if (message) {
+            this.setMessage(null);
         }
 
         this.setVerificationCode(verificationCode);
     }
 
     generateNewPin() {
-        // GET request to generate new pin
-        // do I need to send in email address to check session relates to this applicant?
-        // Probably dont need to do anything else
-
-        console.log('Generate Pin Code FIRED!!!');
+        const {error, message} = this.state;
         const URI = 'http://localhost:4090/home/newpin';
-
+        // Clear previous error message or message if user enters a character in field 
+        if (error) {
+            this.setError(null);
+        }
+        if (message) {
+            this.setMessage(null);
+        }   
         getNewPin(URI)
-        .then(response => console.log('response:', response)) 
-        .catch(err => console.log('err:', err));
+        .then((response) => {
+            if (response.status === 'error') {
+                throw response.error
+            } else {
+                console.log('response:', response);
+                this.setMessage('New verification code sent, please check your phone'); 
+            }
+        }) 
+        .catch(error => this.setError(error = error.message || error));
     }
 
     onCanSubmit() {
@@ -51,16 +62,36 @@ class EnterVerificationCode extends Component {
     }
 
     onHandleSubmit() { 
-        console.log('onHandleSubmit FIRED!!!');
+        const {verificationCode} = this.state;
         if (this.onCanSubmit()) {
-            // HERE we POST applicant details - i.e. update the database and set state
-            this.props.setPinVerified();
+            const URI = 'http://localhost:4090/home/verify';
+
+            // Dont need to resend applicant data as it is stored in the session cookie on the server
+            // Need to consider hashing the pin code though 
+            const options = {
+                pinCode: verificationCode 
+            };
+            postApplicant(URI, options )
+            .then((data) => {
+                if (data.status === 'error') {
+                    throw data.error
+                } else {
+                    this.props.setPinVerified();
+                }
+            })
+            .catch(error => this.setError(error = error.message || error));
         } 
     }
 
     setError(error) {
         this.setState({ 
             error
+        })
+    }
+
+    setMessage(message) {
+        this.setState({ 
+            message
         })
     }
 
@@ -72,12 +103,12 @@ class EnterVerificationCode extends Component {
 
     render() {
         let {phoneNumber} = this.props;
-        let {verificationCode} = this.state;
-        let {error} = this.state;
+        let {verificationCode, error, message} = this.state;
+
         return (
             <div className="container">
                 <div className="row">
-                    <h3>Verify Your </h3>
+                    <h3>Verify your phone number</h3>
                 </div>
                 <div className="row App-intro">
                     We have sent a verification code in a text message to the number you have provided <strong>{phoneNumber}</strong>.
@@ -108,7 +139,7 @@ class EnterVerificationCode extends Component {
                         <p className="hide-text">Error</p>
                     </div>
                     <div className="col-75">
-                        <p className="error">{error}</p>
+                        <p className="error message">{error}</p>
                     </div>
                 </div>      
 

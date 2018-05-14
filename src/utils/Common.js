@@ -36,7 +36,7 @@ export function postRequest(URI, options) {
     body: JSON.stringify(options)
   })
   .then(res => res.json())
-  .catch((err) => {console.log('err::', err); return err;})
+  .catch((err) => err)
 }
 
 export function postApplicant(URI, options) {
@@ -44,8 +44,7 @@ export function postApplicant(URI, options) {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(options)
   })
@@ -57,12 +56,7 @@ export function getNewPin(URI) {
   return fetch(URI, {
     method: 'GET',
     Accept: 'application.json',
-    credentials: 'include',
-    /*
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
-    */
+    credentials: 'include'
   })
   .then(data => data.json())
   .catch(err => err)

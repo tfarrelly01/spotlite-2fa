@@ -150,15 +150,10 @@ class App extends Component {
             this.setState({error: data.error});
           } else {
             this.setState({pinGenerated: true});
-            console.log('data:', data);
           }
         })
         .catch(error => this.setState({error: error.message || error}));
     }     
-    else {
-      console.log("CANNOT Submit!!!");
-      // generate error message - based on first flagged error. Ensure errors searched for are in form field order
-    }
   }
 
   setPinVerified() {
