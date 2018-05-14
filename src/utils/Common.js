@@ -42,11 +42,28 @@ export function postRequest(URI, options) {
 export function postApplicant(URI, options) {
   return fetch(URI, {
     method: 'POST',
+    credentials: 'include',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify(options)
   })
   .then(res => res.json())
+  .catch(err => err)
+}
+
+export function getNewPin(URI) {
+  return fetch(URI, {
+    method: 'GET',
+    Accept: 'application.json',
+    credentials: 'include',
+    /*
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    },
+    */
+  })
+  .then(data => data.json())
   .catch(err => err)
 }

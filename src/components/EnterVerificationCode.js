@@ -1,68 +1,78 @@
 import React, { Component } from 'react';
-
 import '../css/LandingPage.css';
+import {getNewPin} from '../utils/Common.js';
 
 class EnterVerificationCode extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            verificationCode: '',
+            newPinSent: false,
+            pinSentMessage: null,
             error: null
         }
         this.onChange = this.onChange.bind(this);
-        this.onBlurEvent = this.onBlurEvent.bind(this);
+        this.generateNewPin = this.generateNewPin.bind(this);
         this.onCanSubmit = this.onCanSubmit.bind(this);
         this.onHandleSubmit = this.onHandleSubmit.bind(this);
         this.setError = this.setError.bind(this);
+        this.setVerificationCode = this.setVerificationCode.bind(this);
     }
 
     onChange(event) {
         let {error} = this.state;
-        let targetValue = event.target.value;
+        let verificationCode = event.target.value;
 
         // Clear previous error message if user enters a character in field 
         if (error) {
             this.setError(null);
         }
-        this.props.setVerificationCode(targetValue);
-    
+
+        this.setVerificationCode(verificationCode);
     }
 
-    onBlurEvent(event) {
-        const {generatedPin} = this.props;
+    generateNewPin() {
+        // GET request to generate new pin
+        // do I need to send in email address to check session relates to this applicant?
+        // Probably dont need to do anything else
 
-        let targetValue = event.target.value;
+        console.log('Generate Pin Code FIRED!!!');
+        const URI = 'http://localhost:4090/home/newpin';
 
-        if (targetValue.length === 0) {
-            this.setError('A Verification Code is required!');
-        } else if (targetValue !== generatedPin) {
-            this.setError('Your verification code is invalid. Please check it and try again.');
-        } else {
-            this.setError(null);
-        }
-        this.props.setVerificationCode(targetValue);
+        getNewPin(URI)
+        .then(response => console.log('response:', response)) 
+        .catch(err => console.log('err:', err));
     }
 
     onCanSubmit() {
         let {error} = this.state;
+
         return error ? false : true;
     }
 
-    onHandleSubmit() {
-        let {generatedPin} = this.state;
-
+    onHandleSubmit() { 
+        console.log('onHandleSubmit FIRED!!!');
         if (this.onCanSubmit()) {
-            this.props.setVerificationCode(generatedPin);
-        }
+            // HERE we POST applicant details - i.e. update the database and set state
+            this.props.setPinVerified();
+        } 
     }
 
     setError(error) {
-        this.setState({
-            error: error
+        this.setState({ 
+            error
+        })
+    }
+
+    setVerificationCode(verificationCode) {
+        this.setState({ 
+            verificationCode
         })
     }
 
     render() {
-        let {phoneNumber, verificationCode} = this.props;
+        let {phoneNumber} = this.props;
+        let {verificationCode} = this.state;
         let {error} = this.state;
         return (
             <div className="container">
@@ -70,8 +80,9 @@ class EnterVerificationCode extends Component {
                     <h3>Verify Your </h3>
                 </div>
                 <div className="row App-intro">
-                    We have sent a pin code in a text message to the number you have provided <strong>{phoneNumber}</strong>.
-                    Please enter the pin code below. If you have not received a pin code you can request a new one. 
+                    We have sent a verification code in a text message to the number you have provided <strong>{phoneNumber}</strong>.
+                    Please enter the verification code we sent below. If you have not received a code you can <a href="#" 
+                    onClick={this.generateNewPin}>request a new one</a>. 
                 </div>
                 <br />
                 <br />
@@ -88,7 +99,6 @@ class EnterVerificationCode extends Component {
                             placeholder="Verification Code"
                             value={verificationCode}
                             onChange={this.onChange}
-                            onBlur={this.onBlurEvent}
                         />
                     </div>
                 </div>
@@ -111,7 +121,7 @@ class EnterVerificationCode extends Component {
                             type="submit"
                             value="Verify"
                             disabled={!this.onCanSubmit()}
-                            onSubmit={this.onHandleSubmit}
+                            onClick={this.onHandleSubmit}
                         />
                     </div>
                 </div>

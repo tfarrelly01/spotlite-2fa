@@ -19,8 +19,6 @@ class App extends Component {
         phoneNumber: '',
         pinGenerated: false,
         pinVerified: false,
-        verificationCode: '',
-generatedPin: '1234',
         error: null,
         errors: {
           name: true,
@@ -36,10 +34,10 @@ generatedPin: '1234',
     this.updateState = this.updateState.bind(this);
     this.onCanSubmit = this.onCanSubmit.bind(this);
     this.onHandleSubmit = this.onHandleSubmit.bind(this);
-    this.setVerificationCode = this.setVerificationCode.bind(this);
     this.setError = this.setError.bind(this);
     this.setPhoneNumber = this.setPhoneNumber.bind(this);
     this.setAddress = this.setAddress.bind(this);
+    this.setPinVerified = this.setPinVerified.bind(this);
   }
   
   componentWillUpdate(nextProps, nextState) {
@@ -76,14 +74,6 @@ generatedPin: '1234',
     if (targetName === 'name') {
       if (targetValue.length === 0) {
         error = 'Your name is required';
-      } else {
-        error = null;
-      }
-    }
-
-    if (targetName === 'verificationCode') {
-      if (targetValue.length === 0) {
-        error = 'A Verification Code is required!';
       } else {
         error = null;
       }
@@ -131,8 +121,6 @@ generatedPin: '1234',
         ...this.state.errors
       },
     });
-
-    console.log('this.state - App :', this.state);
   }
 
   setPhoneNumber(phoneNumber) {
@@ -152,7 +140,6 @@ generatedPin: '1234',
 
   onHandleSubmit() {
     const {eMail} = this.state
-    let {pinGenerated} = this.state;
 
     if (this.onCanSubmit()) {
         const URI = 'http://localhost:4090/home/applicant';
@@ -162,8 +149,8 @@ generatedPin: '1234',
           if (data.status === 'error') {
             this.setState({error: data.error});
           } else {
-            console.log('data:', data); return data; 
             this.setState({pinGenerated: true});
+            console.log('data:', data);
           }
         })
         .catch(error => this.setState({error: error.message || error}));
@@ -174,9 +161,9 @@ generatedPin: '1234',
     }
   }
 
-  setVerificationCode(code) {
+  setPinVerified() {
     this.setState({
-      verificationCode: code
+      pinVerified: true
     });
   }
     
@@ -198,7 +185,6 @@ generatedPin: '1234',
         .then((email) => {
           return this.getData(URI, options)
             .then((data) => {
-              console.log('data:', data);
               if (data.Certainty === 'verified' || data.Certainty === 'unknown') {
                 this.updateState(null, targetName, emailAddress);               
               } else {
@@ -243,13 +229,13 @@ generatedPin: '1234',
   getData(URI, options) {
     return new Promise( ( resolve, reject ) => {
       postRequest(URI, options)
-        .then((response) => {console.log('getData response:', response); resolve(response)}) 
-        .catch((err) => { console.log('getData err:', err); reject(err)});
+        .then(response => resolve(response)) 
+        .catch(err => reject(err));
     } );
   }
 
   render() {
-    let {name, eMail, selectedAddress, addressSelected, phoneNumber, pinGenerated, generatedPin, pinVerified, verificationCode, error, errors} = this.state;
+    let {name, eMail, selectedAddress, addressSelected, phoneNumber, pinGenerated, pinVerified, error, errors} = this.state;
     return (
       <div className="App">  
         <header className="App-header">
@@ -280,10 +266,7 @@ generatedPin: '1234',
             ?
               <EnterVerificationCode 
                 phoneNumber={phoneNumber}
-                pinGenerated={pinGenerated}
-            generatedPin={generatedPin}
-                verificationCode={verificationCode}
-                setVerificationCode={this.setVerificationCode}
+                setPinVerified={this.setPinVerified}
               />
             :
             <VerificationSuccess 
