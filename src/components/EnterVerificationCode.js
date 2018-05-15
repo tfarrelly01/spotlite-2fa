@@ -15,6 +15,7 @@ class EnterVerificationCode extends Component {
         this.onCanSubmit = this.onCanSubmit.bind(this);
         this.onHandleSubmit = this.onHandleSubmit.bind(this);
         this.setError = this.setError.bind(this);
+        this.setMessage = this.setMessage.bind(this);
         this.setVerificationCode = this.setVerificationCode.bind(this);
     }
 
@@ -29,7 +30,6 @@ class EnterVerificationCode extends Component {
         if (message) {
             this.setMessage(null);
         }
-
         this.setVerificationCode(verificationCode);
     }
 
@@ -48,7 +48,7 @@ class EnterVerificationCode extends Component {
             if (response.status === 'error') {
                 throw response.error
             } else {
-                console.log('response:', response);
+console.log('response:', response);
                 this.setMessage('New verification code sent, please check your phone'); 
             }
         }) 

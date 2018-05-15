@@ -37,6 +37,7 @@ class App extends Component {
     this.setError = this.setError.bind(this);
     this.setPhoneNumber = this.setPhoneNumber.bind(this);
     this.setAddress = this.setAddress.bind(this);
+    this.resetAddrState = this.resetAddrState.bind(this);
     this.setPinVerified = this.setPinVerified.bind(this);
   }
   
@@ -121,6 +122,25 @@ class App extends Component {
         ...this.state.errors
       },
     });
+  }
+
+  resetAddrState() {
+    this.setState({
+      addressSelected: false,
+      selectedAddress: {
+        ...this.state.selectedAddress,
+        contactAddr1: '',
+        contactAddr2: '',
+        contactAddr3: '',
+        contactCity: '',
+        contactState: '',
+        contactPostCode: '',
+        contactCountry: ''
+      },
+      errors: {
+        ...this.state.errors
+      },
+    })
   }
 
   setPhoneNumber(phoneNumber) {
@@ -230,7 +250,8 @@ class App extends Component {
   }
 
   render() {
-    let {name, eMail, selectedAddress, addressSelected, phoneNumber, pinGenerated, pinVerified, error, errors} = this.state;
+    const {name, eMail, selectedAddress, addressSelected, phoneNumber, pinGenerated, pinVerified, error, errors} = this.state;
+    const {contactAddr1, contactAddr2, contactAddr3, contactCity, contactPostCode, contactState} = this.state.selectedAddress
     return (
       <div className="App">  
         <header className="App-header">
@@ -242,14 +263,20 @@ class App extends Component {
             <LandingPage
               name={name}
               eMail={eMail}
-              selectedAddress={selectedAddress}
               addressSelected={addressSelected}
+              contactAddr1={contactAddr1} 
+              contactAddr2={contactAddr2} 
+              contactAddr3={contactAddr3} 
+              contactCity={contactCity} 
+              contactState={contactState} 
+              contactPostCode={contactPostCode}   
               phoneNumber={phoneNumber}
               error={error}
               errors={errors}
               setError={this.setError}
               setPhoneNumber={this.setPhoneNumber}
               setAddress={this.setAddress}
+              resetAddrState={this.resetAddrState}
               onEmailBlur={this.onEmailBlur}              
               onPhoneNoBlur={this.onPhoneNoBlur}
               onChange={this.onChange}

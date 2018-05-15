@@ -4,6 +4,7 @@ import 'react-phone-number-input/rrui.css';
 import 'react-phone-number-input/style.css';
 import InputAddrSearchTerm from './InputAddrSearchTerm';
 import AddressList from './AddressList';
+import AddressCard from './AddressCard';
 import '../css/LandingPage.css';
 
 import {getRequest} from '../utils/Common';
@@ -75,6 +76,10 @@ class LandingPage extends Component {
 
         this.props.setError(null);
 
+        if (targetName === 'addrSearchTerm') {
+            this.props.resetAddrState();
+        }
+
         this.setState({
             [targetName]: targetValue
         })
@@ -89,8 +94,9 @@ class LandingPage extends Component {
     }
 
     render() {
-        let {name, eMail, phoneNumber, error, errors} = this.props;
-        let {addrSearchTerm, addrSearchResults} = this.state;
+        const {name, eMail, addressSelected, phoneNumber, error, errors, contactAddr1, contactAddr2, contactAddr3, contactCity, contactPostCode, contactState} = this.props;
+        const {addrSearchTerm, addrSearchResults} = this.state;
+
         return (
             <div className="container">
                 <div className="row">
@@ -188,15 +194,26 @@ class LandingPage extends Component {
                     onChangeEvt={this.onChangeEvt}
                 />
                 {
-                    addrSearchResults && addrSearchResults.count > 0
+                    addressSelected
                     ?
-                        <AddressList 
-                            addrSearchResults={addrSearchResults}
-                            onChangeEvt={this.onChangeEvt}
+                        <AddressCard
+                            contactAddr1={contactAddr1} 
+                            contactAddr2={contactAddr2} 
+                            contactAddr3={contactAddr3} 
+                            contactCity={contactCity} 
+                            contactState={contactState} 
+                            contactPostCode={contactPostCode}               
                         />
                     :
-                        null
-                }
+                        addrSearchResults && addrSearchResults.count > 0
+                        ?
+                            <AddressList 
+                                addrSearchResults={addrSearchResults}
+                                onChangeEvt={this.onChangeEvt}
+                            />
+                        :
+                            null
+                } 
 
                 <div className="row">
                     <div className="col-25">
