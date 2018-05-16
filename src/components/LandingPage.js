@@ -94,7 +94,7 @@ class LandingPage extends Component {
     }
 
     render() {
-        const {name, eMail, addressSelected, phoneNumber, error, errors, contactAddr1, contactAddr2, contactAddr3, contactCity, contactPostCode, contactState} = this.props;
+        const {surname, middleName, forename, eMail, addressSelected, phoneNumber, error, errors, contactAddr1, contactAddr2, contactAddr3, contactCity, contactPostCode, contactState} = this.props;
         const {addrSearchTerm, addrSearchResults} = this.state;
 
         return (
@@ -107,23 +107,78 @@ class LandingPage extends Component {
                     commence the background checking process.
                 </div>
                 <br />
+{/*
+<div className="row">
+    <div className="col-25">
+        <label htmlFor="name">Name</label>
+    </div>
+    <div className="col-75">
+        <input 
+            className={errors.name ? "error" : ""}
+            type="text" 
+            id="name" 
+            name="name" 
+            placeholder="Your name..."
+            value={name}
+            onChange={this.props.onChange}
+            onBlur={this.props.onBlurEvent}
+        />
+    </div>
+</div>
+*/}
                 <div className="row">
                     <div className="col-25">
-                        <label htmlFor="name">Name</label>
+                        <label htmlFor="name">Surname</label>
                     </div>
                     <div className="col-75">
                         <input 
-                            className={errors.name ? "error" : ""}
+                            className={errors.surname ? "error" : ""}
                             type="text" 
-                            id="name" 
-                            name="name" 
-                            placeholder="Your name..."
-                            value={name}
+                            id="surname" 
+                            name="surname" 
+                            placeholder="Your surname"
+                            value={surname}
                             onChange={this.props.onChange}
                             onBlur={this.props.onBlurEvent}
                         />
                     </div>
                 </div>
+
+                <div className="row">
+                    <div className="col-25">
+                        <label htmlFor="name">Middle Names</label>
+                    </div>
+                    <div className="col-75">
+                        <input 
+                            type="text" 
+                            id="middleName" 
+                            name="middleName" 
+                            placeholder="Any middle names"
+                            value={middleName}
+                            onChange={this.props.onChange}
+                            onBlur={this.props.onBlurEvent}
+                        />
+                    </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-25">
+                        <label htmlFor="name">Forename</label>
+                    </div>
+                    <div className="col-75">
+                        <input 
+                            className={errors.forename ? "error" : ""}
+                            type="text" 
+                            id="forename" 
+                            name="forename" 
+                            placeholder="Your forename"
+                            value={forename}
+                            onChange={this.props.onChange}
+                            onBlur={this.props.onBlurEvent}
+                        />
+                    </div>
+                </div>
+
                 <div className="row">
                     <div className="col-25">
                         <label htmlFor="email">Email Address</label>
@@ -134,33 +189,32 @@ class LandingPage extends Component {
                             type="email" 
                             id="email" 
                             name="eMail" 
-                            placeholder="Your email address.."
+                            placeholder="Your email address"
                             value={eMail}
                             onChange={this.props.onChange}
                             onBlur={this.props.onEmailBlur}
                         />
                     </div>
                 </div>
-                {/*
-                <div className="row">
-                    <div className="col-25">
-                        <label htmlFor="mphone">Phone Number</label>
-                    </div>
-                    <div className="col-75">
-                        <input                                   
-                            className={errors.phoneNumber ? "error" : ""}
-                            type="tel" 
-                            id="mphone" 
-                            name="phoneNumber" 
-                            placeholder="Enter your phone number"
-                            value={phoneNumber}
-                            onChange={this.props.onChange}
-                            onBlur={this.props.onBlurEvent}
-                        />
-                    </div>
-                </div>
-                */}
-
+{/*
+<div className="row">
+    <div className="col-25">
+        <label htmlFor="mphone">Phone Number</label>
+    </div>
+    <div className="col-75">
+        <input                                   
+            className={errors.phoneNumber ? "error" : ""}
+            type="tel" 
+            id="mphone" 
+            name="phoneNumber" 
+            placeholder="Enter your phone number"
+            value={phoneNumber}
+            onChange={this.props.onChange}
+            onBlur={this.props.onBlurEvent}
+        />
+    </div>
+</div>
+*/}
                 <div className="row">
                     <div className="col-25">
                         <label htmlFor="mphone">Phone Number</label>

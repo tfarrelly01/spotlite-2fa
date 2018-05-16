@@ -12,7 +12,9 @@ class App extends Component {
     super(props);
 
     this.state = {
-        name: '',
+        surname: '',
+        middleName: '',
+        forename: '',
         eMail: '',
         selectedAddress: {},
         addressSelected: false,
@@ -21,7 +23,8 @@ class App extends Component {
         pinVerified: false,
         error: null,
         errors: {
-          name: true,
+          surname: true,
+          forename: true,
           eMail: true,
           phoneNumber: true,
         }
@@ -72,7 +75,7 @@ class App extends Component {
     let targetValue = event.target.value;
     let error;
 
-    if (targetName === 'name') {
+    if (targetName === 'surname' || targetName === 'forename') {
       if (targetValue.length === 0) {
         error = 'Your name is required';
       } else {
@@ -250,7 +253,7 @@ class App extends Component {
   }
 
   render() {
-    const {name, eMail, selectedAddress, addressSelected, phoneNumber, pinGenerated, pinVerified, error, errors} = this.state;
+    const {surname, middleName, forename, eMail, selectedAddress, addressSelected, phoneNumber, pinGenerated, pinVerified, error, errors} = this.state;
     const {contactAddr1, contactAddr2, contactAddr3, contactCity, contactPostCode, contactState} = this.state.selectedAddress
     return (
       <div className="App">  
@@ -261,7 +264,9 @@ class App extends Component {
         { !pinGenerated
           ?
             <LandingPage
-              name={name}
+              surname={surname}
+              middleName={middleName}
+              forename={forename}
               eMail={eMail}
               addressSelected={addressSelected}
               contactAddr1={contactAddr1} 
@@ -287,12 +292,17 @@ class App extends Component {
           : pinGenerated && !pinVerified
             ?
               <EnterVerificationCode 
+                surname={surname}
+                middleName={middleName}
+                forename={forename}
+                eMail={eMail}
                 phoneNumber={phoneNumber}
+                selectedAddress={selectedAddress}
                 setPinVerified={this.setPinVerified}
               />
             :
             <VerificationSuccess 
-              name={name}
+              forename={forename}
             />
         }
       </div>

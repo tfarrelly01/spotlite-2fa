@@ -63,14 +63,26 @@ console.log('response:', response);
 
     onHandleSubmit() { 
         const {verificationCode} = this.state;
+        const {surname, middleName, forename, eMail, phoneNumber, selectedAddress} = this.props;
         if (this.onCanSubmit()) {
             const URI = 'http://localhost:4090/home/verify';
 
-            // Dont need to resend applicant data as it is stored in the session cookie on the server
-            // Need to consider hashing the pin code though 
+            // Need to consider hashing the pin code 
             const options = {
+                ContactSurname: surname,
+                ContactMiddleName: middleName,
+                ContactForename: forename,
+                ContactEmail: eMail,
+                ContactPhone: phoneNumber,
+                ContactAddr1: selectedAddress.contactAddr1,
+                ContactAddr2: selectedAddress.contactAddr2,
+                ContactAddr3: selectedAddress.contactAddr3,
+                ContactCity: selectedAddress.contactCity,
+                ContactState: selectedAddress.contactState,
+                ContactPostCode: selectedAddress.contactPostCode,
                 pinCode: verificationCode 
             };
+
             postApplicant(URI, options )
             .then((data) => {
                 if (data.status === 'error') {
